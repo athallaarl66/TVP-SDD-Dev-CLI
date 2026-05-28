@@ -188,31 +188,52 @@ program
   .description('Load DESIGN.md and generate AI implementation prompt')
   .action(async (featureName) => {
     try {
-      let existingDirs = await getExistingAIDirectories();
-      if (existingDirs.length === 0) {
-        existingDirs = await promptForAIFolders();
+      // Try to find DESIGN.md in multiple locations (in order of priority)
+      let designPath = null;
+      let designLocation = '';
+      
+      // 1. Check for generic DESIGN.md in docs/
+      const genericDesignPath = path.join(PROJECT_DIR, 'docs', 'DESIGN.md');
+      if (await fs.pathExists(genericDesignPath)) {
+        designPath = genericDesignPath;
+        designLocation = 'docs';
       }
       
-      // Try to find DESIGN.md in any AI tool skills folder
-      let designPath = null;
-      for (const aiDir of existingDirs) {
-        const potentialPath = path.join(PROJECT_DIR, aiDir, 'skills', `${featureName}-DESIGN.md`);
-        if (await fs.pathExists(potentialPath)) {
-          designPath = potentialPath;
-          break;
+      // 2. Check for feature-specific DESIGN.md in docs/
+      if (!designPath) {
+        const featureDesignPath = path.join(PROJECT_DIR, 'docs', `${featureName}-DESIGN.md`);
+        if (await fs.pathExists(featureDesignPath)) {
+          designPath = featureDesignPath;
+          designLocation = 'docs';
+        }
+      }
+      
+      // 3. Check AI tool skills folders
+      if (!designPath) {
+        let existingDirs = await getExistingAIDirectories();
+        if (existingDirs.length === 0) {
+          existingDirs = await promptForAIFolders();
+        }
+        
+        for (const aiDir of existingDirs) {
+          const potentialPath = path.join(PROJECT_DIR, aiDir, 'skills', `${featureName}-DESIGN.md`);
+          if (await fs.pathExists(potentialPath)) {
+            designPath = potentialPath;
+            designLocation = `${aiDir}/skills`;
+            break;
+          }
         }
       }
       
       if (!designPath) {
         console.error(chalk.red('Error: File DESIGN.md wajib ada sebagai acuan visual!'));
-        console.error(chalk.yellow(`Expected path: .windsurf/skills/${featureName}-DESIGN.md or similar in other AI tool folders`));
-        process.exit(1);
-      }
-      
-      // Check if DESIGN.md exists
-      if (!(await fs.pathExists(designPath))) {
-        console.error(chalk.red('Error: File DESIGN.md wajib ada sebagai acuan visual!'));
-        console.error(chalk.yellow(`Expected path: ${designPath}`));
+        console.error(chalk.yellow(`Expected path (any of these):`));
+        console.error(chalk.yellow(`  - docs/DESIGN.md (generic for entire project)`));
+        console.error(chalk.yellow(`  - docs/${featureName}-DESIGN.md (feature-specific)`));
+        console.error(chalk.yellow(`  - .windsurf/skills/${featureName}-DESIGN.md`));
+        console.error(chalk.yellow(`  - .opencode/skills/${featureName}-DESIGN.md`));
+        console.error(chalk.yellow(`  - .claude/skills/${featureName}-DESIGN.md`));
+        console.error(chalk.yellow(`  - .antigravity/skills/${featureName}-DESIGN.md`));
         process.exit(1);
       }
       
@@ -223,7 +244,9 @@ program
       console.log(chalk.bold('\n🎨 DESIGN TOKENS LOADED! Silakan jalankan AI Agent (Windsurf Cascade / Claude / OpenCode) dengan prompt berikut:\n'));
       console.log(chalk.bold.white('\'Woi AI, gunakan token visual, warna, dan layout dari DESIGN.md berikut sebagai standar wajib:'));
       console.log(chalk.bold.cyan('\n' + designContent));
-      console.log(chalk.bold.white(`\nSekarang, silakan kamu baca secara MANUAL file \`${existingDirs[0]}/skills/${featureName}-BRD.md\` dan \`${existingDirs[0]}/skills/${featureName}-TECHNICAL_DESIGN.md\`. Implementasikan FULL SLICE CODE PRODUCTION (Database, API, Frontend UI Component dengan reactive state, dan SEO Metadata sekaligus) mengikuti alur bisnis dan teknis dari kedua file tersebut!\'`));
+      
+      // Determine the path for BRD and TECHNICAL_DESIGN files
+      console.log(chalk.bold.white(`\nSekarang, silakan kamu baca secara MANUAL file \`${designLocation}/${featureName}-BRD.md\` dan \`${designLocation}/${featureName}-TECHNICAL_DESIGN.md\`. Implementasikan FULL SLICE CODE PRODUCTION (Database, API, Frontend UI Component dengan reactive state, dan SEO Metadata sekaligus) mengikuti alur bisnis dan teknis dari kedua file tersebut!\'`));
       
     } catch (error) {
       console.error(chalk.red('Error loading DESIGN.md:'), error.message);
