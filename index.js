@@ -193,6 +193,35 @@ test.describe('${featureName} Tests', () => {
 `;
 }
 
+// Helper function to install Playwright if not present
+async function ensurePlaywrightInstalled() {
+  const packageJsonPath = path.join(PROJECT_DIR, 'package.json');
+  
+  if (!(await fs.pathExists(packageJsonPath))) {
+    console.error(chalk.red('Error: package.json not found in project directory'));
+    process.exit(1);
+  }
+  
+  const packageJson = await fs.readJson(packageJsonPath);
+  const devDeps = packageJson.devDependencies || {};
+  
+  if (!devDeps['@playwright/test']) {
+    console.log(chalk.yellow('📦 Installing @playwright/test...'));
+    const { execSync } = require('child_process');
+    try {
+      execSync('npm install --save-dev @playwright/test', { cwd: PROJECT_DIR, stdio: 'inherit' });
+      console.log(chalk.green('✅ @playwright/test installed'));
+      
+      console.log(chalk.yellow('📦 Installing Playwright browsers...'));
+      execSync('npx playwright install', { cwd: PROJECT_DIR, stdio: 'inherit' });
+      console.log(chalk.green('✅ Playwright browsers installed'));
+    } catch (error) {
+      console.error(chalk.red('Error installing Playwright:'), error.message);
+      process.exit(1);
+    }
+  }
+}
+
 // Command 6: /qa-test-run - Execute Playwright test and add to package.json
 program
   .command('/qa-test-run <featureName>')
@@ -214,6 +243,9 @@ program
         console.error(chalk.red('Error: package.json not found in project directory'));
         process.exit(1);
       }
+      
+      // Ensure Playwright is installed
+      await ensurePlaywrightInstalled();
       
       // Read package.json
       const packageJson = await fs.readJson(packageJsonPath);
