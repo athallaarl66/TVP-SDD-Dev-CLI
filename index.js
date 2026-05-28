@@ -32,7 +32,7 @@ async function getExistingAIDirectories() {
 
 // Prompt user to create AI tool folders if none exist
 async function promptForAIFolders() {
-  const { selectedFolders } = await inquirer.prompt([
+  const { selectedFolders } = await inquirer.default.prompt([
     {
       type: 'checkbox',
       name: 'selectedFolders',
