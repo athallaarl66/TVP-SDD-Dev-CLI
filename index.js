@@ -12,12 +12,27 @@ const program = new Command();
 const CLI_DIR = __dirname; // Internal CLI directory
 const TEMPLATES_DIR = path.join(CLI_DIR, 'templates'); // Internal templates directory
 const PROJECT_DIR = process.cwd(); // User's current working directory
-const DOCS_DIR = path.join(PROJECT_DIR, 'docs'); // User's docs directory
 const TESTS_DIR = path.join(PROJECT_DIR, 'tests'); // User's tests directory
+
+// AI tool directories
+const AI_DIRS = ['.windsurf', '.opencode', '.claude', '.antigravity'];
+const AI_SUBDIRS = ['skills', 'workflows', '_templates'];
+
+// Get existing AI tool directories
+async function getExistingAIDirectories() {
+  const existingDirs = [];
+  for (const aiDir of AI_DIRS) {
+    const aiDirPath = path.join(PROJECT_DIR, aiDir);
+    if (await fs.pathExists(aiDirPath)) {
+      existingDirs.push(aiDir);
+    }
+  }
+  return existingDirs;
+}
 
 // Ensure directories exist
 async function ensureDirectories() {
-  await fs.ensureDir(DOCS_DIR);
+  // Create tests directory
   await fs.ensureDir(TESTS_DIR);
 }
 
@@ -29,8 +44,14 @@ program
     try {
       await ensureDirectories();
       
+      const existingDirs = await getExistingAIDirectories();
+      if (existingDirs.length === 0) {
+        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
+        console.error(chalk.yellow('Please create at least one of these folders first'));
+        process.exit(1);
+      }
+      
       const templatePath = path.join(TEMPLATES_DIR, 'brd-template.md');
-      const outputPath = path.join(DOCS_DIR, `${featureName}-BRD.md`);
       
       // Check if template exists
       if (!(await fs.pathExists(templatePath))) {
@@ -38,11 +59,17 @@ program
         process.exit(1);
       }
       
-      // Read template and write to user's docs
+      // Read template once
       const templateContent = await fs.readFile(templatePath, 'utf-8');
-      await fs.writeFile(outputPath, templateContent, 'utf-8');
       
-      console.log(chalk.green(`✅ BRD document created: ${outputPath}`));
+      // Generate to existing AI tool skills folders
+      for (const aiDir of existingDirs) {
+        const skillsPath = path.join(PROJECT_DIR, aiDir, 'skills');
+        await fs.ensureDir(skillsPath);
+        const outputPath = path.join(skillsPath, `${featureName}-BRD.md`);
+        await fs.writeFile(outputPath, templateContent, 'utf-8');
+        console.log(chalk.green(`✅ BRD document created: ${outputPath}`));
+      }
     } catch (error) {
       console.error(chalk.red('Error generating BRD:'), error.message);
       process.exit(1);
@@ -57,8 +84,14 @@ program
     try {
       await ensureDirectories();
       
+      const existingDirs = await getExistingAIDirectories();
+      if (existingDirs.length === 0) {
+        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
+        console.error(chalk.yellow('Please create at least one of these folders first'));
+        process.exit(1);
+      }
+      
       const templatePath = path.join(TEMPLATES_DIR, 'technical-template.md');
-      const outputPath = path.join(DOCS_DIR, `${featureName}-TECHNICAL_DESIGN.md`);
       
       // Check if template exists
       if (!(await fs.pathExists(templatePath))) {
@@ -66,11 +99,17 @@ program
         process.exit(1);
       }
       
-      // Read template and write to user's docs
+      // Read template once
       const templateContent = await fs.readFile(templatePath, 'utf-8');
-      await fs.writeFile(outputPath, templateContent, 'utf-8');
       
-      console.log(chalk.green(`✅ Technical Design document created: ${outputPath}`));
+      // Generate to existing AI tool skills folders
+      for (const aiDir of existingDirs) {
+        const skillsPath = path.join(PROJECT_DIR, aiDir, 'skills');
+        await fs.ensureDir(skillsPath);
+        const outputPath = path.join(skillsPath, `${featureName}-TECHNICAL_DESIGN.md`);
+        await fs.writeFile(outputPath, templateContent, 'utf-8');
+        console.log(chalk.green(`✅ Technical Design document created: ${outputPath}`));
+      }
     } catch (error) {
       console.error(chalk.red('Error generating Technical Design:'), error.message);
       process.exit(1);
@@ -85,8 +124,14 @@ program
     try {
       await ensureDirectories();
       
+      const existingDirs = await getExistingAIDirectories();
+      if (existingDirs.length === 0) {
+        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
+        console.error(chalk.yellow('Please create at least one of these folders first'));
+        process.exit(1);
+      }
+      
       const templatePath = path.join(TEMPLATES_DIR, 'spec-test-template.md');
-      const outputPath = path.join(DOCS_DIR, `${featureName}-SPEC_TEST.md`);
       
       // Check if template exists
       if (!(await fs.pathExists(templatePath))) {
@@ -94,11 +139,17 @@ program
         process.exit(1);
       }
       
-      // Read template and write to user's docs
+      // Read template once
       const templateContent = await fs.readFile(templatePath, 'utf-8');
-      await fs.writeFile(outputPath, templateContent, 'utf-8');
       
-      console.log(chalk.green(`✅ Spec Test document created: ${outputPath}`));
+      // Generate to existing AI tool workflows folders
+      for (const aiDir of existingDirs) {
+        const workflowsPath = path.join(PROJECT_DIR, aiDir, 'workflows');
+        await fs.ensureDir(workflowsPath);
+        const outputPath = path.join(workflowsPath, `${featureName}-SPEC_TEST.md`);
+        await fs.writeFile(outputPath, templateContent, 'utf-8');
+        console.log(chalk.green(`✅ Spec Test document created: ${outputPath}`));
+      }
     } catch (error) {
       console.error(chalk.red('Error generating Spec Test:'), error.message);
       process.exit(1);
@@ -111,7 +162,28 @@ program
   .description('Load DESIGN.md and generate AI implementation prompt')
   .action(async (featureName) => {
     try {
-      const designPath = path.join(DOCS_DIR, `${featureName}-DESIGN.md`);
+      const existingDirs = await getExistingAIDirectories();
+      if (existingDirs.length === 0) {
+        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
+        console.error(chalk.yellow('Please create at least one of these folders first'));
+        process.exit(1);
+      }
+      
+      // Try to find DESIGN.md in any AI tool skills folder
+      let designPath = null;
+      for (const aiDir of existingDirs) {
+        const potentialPath = path.join(PROJECT_DIR, aiDir, 'skills', `${featureName}-DESIGN.md`);
+        if (await fs.pathExists(potentialPath)) {
+          designPath = potentialPath;
+          break;
+        }
+      }
+      
+      if (!designPath) {
+        console.error(chalk.red('Error: File DESIGN.md wajib ada sebagai acuan visual!'));
+        console.error(chalk.yellow(`Expected path: .windsurf/skills/${featureName}-DESIGN.md or similar in other AI tool folders`));
+        process.exit(1);
+      }
       
       // Check if DESIGN.md exists
       if (!(await fs.pathExists(designPath))) {
@@ -127,7 +199,7 @@ program
       console.log(chalk.bold('\n🎨 DESIGN TOKENS LOADED! Silakan jalankan AI Agent (Windsurf Cascade / Claude / OpenCode) dengan prompt berikut:\n'));
       console.log(chalk.bold.white('\'Woi AI, gunakan token visual, warna, dan layout dari DESIGN.md berikut sebagai standar wajib:'));
       console.log(chalk.bold.cyan('\n' + designContent));
-      console.log(chalk.bold.white('\nSekarang, silakan kamu baca secara MANUAL file `./docs/' + featureName + '-BRD.md` dan `./docs/' + featureName + '-TECHNICAL_DESIGN.md`. Implementasikan FULL SLICE CODE PRODUCTION (Database, API, Frontend UI Component dengan reactive state, dan SEO Metadata sekaligus) mengikuti alur bisnis dan teknis dari kedua file tersebut!\'\n'));
+      console.log(chalk.bold.white(`\nSekarang, silakan kamu baca secara MANUAL file \`${existingDirs[0]}/skills/${featureName}-BRD.md\` dan \`${existingDirs[0]}/skills/${featureName}-TECHNICAL_DESIGN.md\`. Implementasikan FULL SLICE CODE PRODUCTION (Database, API, Frontend UI Component dengan reactive state, dan SEO Metadata sekaligus) mengikuti alur bisnis dan teknis dari kedua file tersebut!\'`));
       
     } catch (error) {
       console.error(chalk.red('Error loading DESIGN.md:'), error.message);
@@ -143,14 +215,30 @@ program
     try {
       await ensureDirectories();
       
-      const specTestPath = path.join(DOCS_DIR, `${featureName}-SPEC_TEST.md`);
-      const testScriptPath = path.join(TESTS_DIR, `${featureName}.spec.js`);
-      
-      // Check if SPEC_TEST.md exists
-      if (!(await fs.pathExists(specTestPath))) {
-        console.error(chalk.red(`Error: ${featureName}-SPEC_TEST.md not found in docs directory`));
+      const existingDirs = await getExistingAIDirectories();
+      if (existingDirs.length === 0) {
+        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
+        console.error(chalk.yellow('Please create at least one of these folders first'));
         process.exit(1);
       }
+      
+      // Try to find SPEC_TEST.md in any AI tool workflows folder
+      let specTestPath = null;
+      for (const aiDir of existingDirs) {
+        const potentialPath = path.join(PROJECT_DIR, aiDir, 'workflows', `${featureName}-SPEC_TEST.md`);
+        if (await fs.pathExists(potentialPath)) {
+          specTestPath = potentialPath;
+          break;
+        }
+      }
+      
+      if (!specTestPath) {
+        console.error(chalk.red(`Error: ${featureName}-SPEC_TEST.md not found in AI tool workflows folders`));
+        console.error(chalk.yellow(`Run 'sdd-gen /spec-test ${featureName}' first to generate the spec test document`));
+        process.exit(1);
+      }
+      
+      const testScriptPath = path.join(TESTS_DIR, `${featureName}.spec.js`);
       
       // Read SPEC_TEST content
       const specTestContent = await fs.readFile(specTestPath, 'utf-8');
@@ -276,8 +364,14 @@ program
     try {
       await ensureDirectories();
       
+      const existingDirs = await getExistingAIDirectories();
+      if (existingDirs.length === 0) {
+        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
+        console.error(chalk.yellow('Please create at least one of these folders first'));
+        process.exit(1);
+      }
+      
       const templatePath = path.join(TEMPLATES_DIR, 'qa-report-template.md');
-      const outputPath = path.join(DOCS_DIR, `${featureName}-REPORT.md`);
       
       // Check if template exists
       if (!(await fs.pathExists(templatePath))) {
@@ -285,11 +379,17 @@ program
         process.exit(1);
       }
       
-      // Read template and write to user's docs
+      // Read template once
       const templateContent = await fs.readFile(templatePath, 'utf-8');
-      await fs.writeFile(outputPath, templateContent, 'utf-8');
       
-      console.log(chalk.green(`✅ QA Report document created: ${outputPath}`));
+      // Generate to existing AI tool workflows folders
+      for (const aiDir of existingDirs) {
+        const workflowsPath = path.join(PROJECT_DIR, aiDir, 'workflows');
+        await fs.ensureDir(workflowsPath);
+        const outputPath = path.join(workflowsPath, `${featureName}-REPORT.md`);
+        await fs.writeFile(outputPath, templateContent, 'utf-8');
+        console.log(chalk.green(`✅ QA Report document created: ${outputPath}`));
+      }
     } catch (error) {
       console.error(chalk.red('Error generating QA Report:'), error.message);
       process.exit(1);
@@ -304,33 +404,47 @@ program
     try {
       await ensureDirectories();
       
+      const existingDirs = await getExistingAIDirectories();
+      if (existingDirs.length === 0) {
+        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
+        console.error(chalk.yellow('Please create at least one of these folders first'));
+        process.exit(1);
+      }
+      
       console.log(chalk.bold.cyan(`\n🚀 Initializing documentation for: ${featureName}\n`));
+      console.log(chalk.yellow(`Found AI tool folders: ${existingDirs.join(', ')}\n`));
       
       const templates = [
-        { name: 'BRD', template: 'brd-template.md', output: `${featureName}-BRD.md` },
-        { name: 'Technical Design', template: 'technical-template.md', output: `${featureName}-TECHNICAL_DESIGN.md` },
-        { name: 'Spec Test', template: 'spec-test-template.md', output: `${featureName}-SPEC_TEST.md` },
-        { name: 'QA Report', template: 'qa-report-template.md', output: `${featureName}-REPORT.md` }
+        { name: 'BRD', template: 'brd-template.md', output: `${featureName}-BRD.md`, subdir: 'skills' },
+        { name: 'Technical Design', template: 'technical-template.md', output: `${featureName}-TECHNICAL_DESIGN.md`, subdir: 'skills' },
+        { name: 'Spec Test', template: 'spec-test-template.md', output: `${featureName}-SPEC_TEST.md`, subdir: 'workflows' },
+        { name: 'QA Report', template: 'qa-report-template.md', output: `${featureName}-REPORT.md`, subdir: 'workflows' }
       ];
       
       for (const doc of templates) {
         const templatePath = path.join(TEMPLATES_DIR, doc.template);
-        const outputPath = path.join(DOCS_DIR, doc.output);
         
         if (!(await fs.pathExists(templatePath))) {
           console.error(chalk.red(`❌ Error: ${doc.template} not found in CLI templates directory`));
           continue;
         }
         
+        // Read template once
         const templateContent = await fs.readFile(templatePath, 'utf-8');
-        await fs.writeFile(outputPath, templateContent, 'utf-8');
         
-        console.log(chalk.green(`✅ ${doc.name} created: ${outputPath}`));
+        // Generate to existing AI tool folders
+        for (const aiDir of existingDirs) {
+          const subdirPath = path.join(PROJECT_DIR, aiDir, doc.subdir);
+          await fs.ensureDir(subdirPath);
+          const outputPath = path.join(subdirPath, doc.output);
+          await fs.writeFile(outputPath, templateContent, 'utf-8');
+          console.log(chalk.green(`✅ ${doc.name} created: ${outputPath}`));
+        }
       }
       
       console.log(chalk.bold.cyan(`\n📝 Documentation initialized! Next steps:\n`));
-      console.log(chalk.yellow(`1. Fill in the generated documents in docs/ folder`));
-      console.log(chalk.yellow(`2. Create docs/${featureName}-DESIGN.md with visual specifications`));
+      console.log(chalk.yellow(`1. Fill in the generated documents in ${existingDirs[0]}/skills/ and ${existingDirs[0]}/workflows/ folders`));
+      console.log(chalk.yellow(`2. Create ${existingDirs[0]}/skills/${featureName}-DESIGN.md with visual specifications`));
       console.log(chalk.yellow(`3. Run: sdd-gen /implement-code ${featureName}`));
       console.log(chalk.yellow(`4. Run: sdd-gen /qa-test-script ${featureName}`));
       console.log(chalk.yellow(`5. Run: sdd-gen /qa-test-run ${featureName}\n`));
