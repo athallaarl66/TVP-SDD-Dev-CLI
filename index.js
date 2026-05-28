@@ -439,7 +439,49 @@ program
     }
   });
 
-// Command 8: /init - Generate all documentation at once
+// Command 8: /install-all-skills - Install all templates, skills, and workflows to AI tool folders
+program
+  .command('/install-all-skills')
+  .description('Install all templates, skills, and workflows to AI tool folders')
+  .action(async () => {
+    try {
+      let existingDirs = await getExistingAIDirectories();
+      if (existingDirs.length === 0) {
+        existingDirs = await promptForAIFolders();
+      }
+      
+      console.log(chalk.bold.cyan(`\n🚀 Installing all skills to AI tool folders: ${existingDirs.join(', ')}\n`));
+      
+      // Copy CLI templates to each AI tool's _templates folder
+      for (const aiDir of existingDirs) {
+        const templatesTargetPath = path.join(PROJECT_DIR, aiDir, '_templates');
+        await fs.ensureDir(templatesTargetPath);
+        
+        // Copy all templates from CLI templates directory
+        const cliTemplates = await fs.readdir(TEMPLATES_DIR);
+        for (const templateFile of cliTemplates) {
+          const srcPath = path.join(TEMPLATES_DIR, templateFile);
+          const destPath = path.join(templatesTargetPath, templateFile);
+          await fs.copy(srcPath, destPath);
+          console.log(chalk.green(`✅ Copied template: ${aiDir}/_templates/${templateFile}`));
+        }
+      }
+      
+      console.log(chalk.bold.cyan(`\n📝 Installation complete! Templates are now in:`));
+      for (const aiDir of existingDirs) {
+        console.log(chalk.yellow(`  - ${aiDir}/_templates/`));
+      }
+      console.log(chalk.yellow(`\nSkills and workflows will be generated to:`));
+      console.log(chalk.yellow(`  - ${existingDirs[0]}/skills/ (BRD, Technical Design)`));
+      console.log(chalk.yellow(`  - ${existingDirs[0]}/workflows/ (Spec Test, QA Report)\n`));
+      
+    } catch (error) {
+      console.error(chalk.red('Error installing skills:'), error.message);
+      process.exit(1);
+    }
+  });
+
+// Command 9: /init - Generate all documentation at once
 program
   .command('/init <featureName>')
   .description('Generate all documentation (BRD, Technical, Spec Test, QA Report) at once')
