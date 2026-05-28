@@ -452,7 +452,20 @@ program
         existingDirs = await promptForAIFolders();
       }
       
-      console.log(chalk.bold.cyan(`\n🚀 Installing all skills to AI tool folders: ${existingDirs.join(', ')}\n`));
+      console.log(chalk.bold.cyan(`
+████████╗██╗   ██╗██████╗       ███████╗██████╗ ██████╗
+╚══██╔══╝██║   ██║██╔══██╗      ██╔════╝██╔══██╗██╔══██╗
+   ██║   ██║   ██║██████╔╝█████╗███████╗██║  ██║██║  ██║
+   ██║   ╚██╗ ██╔╝██╔═══╝ ╚════╝╚════██║██║  ██║██║  ██║
+   ██║    ╚████╔╝ ██║            ███████║██████╔╝██████╔╝
+   ╚═╝     ╚═══╝  ╚═╝            ╚══════╝╚═════╝ ╚═════╝
+
+                  D E V  ·  C L I
+`));
+      
+      console.log(chalk.gray(`authored by Talapvnk · version 1.0.0 · unlicensed\n`));
+      
+      console.log(chalk.bold.cyan(`🚀 Installing all skills to AI tool folders: ${existingDirs.join(', ')}\n`));
       
       // Copy CLI templates to each AI tool's _templates folder
       for (const aiDir of existingDirs) {
