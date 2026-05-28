@@ -1,435 +1,202 @@
-# TVP-SDD-Dev CLI
+```
+████████╗██╗   ██╗██████╗       ███████╗██████╗ ██████╗
+╚══██╔══╝██║   ██║██╔══██╗      ██╔════╝██╔══██╗██╔══██╗
+   ██║   ██║   ██║██████╔╝█████╗███████╗██║  ██║██║  ██║
+   ██║   ╚██╗ ██╔╝██╔═══╝ ╚════╝╚════██║██║  ██║██║  ██║
+   ██║    ╚████╔╝ ██║            ███████║██████╔╝██████╔╝
+   ╚═╝     ╚═══╝  ╚═╝            ╚══════╝╚═════╝ ╚═════╝
 
-**Software Development Documentation CLI Tool**
+                  D E V  ·  C L I
+```
 
-A global CLI tool for streamlining software development documentation workflow. Generate standardized BRD, Technical Design, Test Specifications, and QA Reports with Playwright E2E testing integration. Works with AI tool folders (.windsurf, .opencode, .claude, .antigravity).
+> *generate docs. drown in automation. ship faster.*
 
-## 🎯 What is TVP-SDD-Dev CLI?
+---
 
-TVP-SDD-Dev CLI is a command-line tool that helps developers and teams create standardized documentation for software development projects. It provides templates and automation for:
+**authored by** · `Talapvnk`  
+**version** · `1.0.0`  
+**license** · `unlicensed — all rights reserved`  
+**status** · `maintained`
 
-- **Business Requirements Document (BRD)** - Define business objectives and requirements
-- **Technical Design Document (TDD)** - Architectural and technical specifications
-- **Software Test Specification (STS)** - Playwright E2E test planning
-- **QA Reports** - Test execution and issue tracking
-- **AI Implementation Prompts** - Generate prompts for AI-assisted coding
+---
 
-## 🚀 Installation
+## what is this
 
-### Prerequisites
+CLI tool to make development documentation faster and easier.
+Generates BRD, Technical Design, Spec Test, and QA Report automatically.
+Integrated with Playwright for E2E testing.
+Works with AI tool folders: `.windsurf` `.opencode` `.claude` `.antigravity`
 
-- Node.js >= 14.0.0
-- npm or yarn
+---
 
-### Install from Source
+## install
 
-1. Clone this repository:
 ```bash
 git clone <repository-url>
 cd TVP-sdd-cli
-```
-
-2. Install dependencies:
-```bash
 npm install
-```
-
-3. Link globally:
-```bash
 npm link
-```
 
-4. Verify installation:
-```bash
+# verify
 sdd-gen --help
 ```
 
-## 📖 Usage
+> requires Node.js >= 14.0.0
 
-### Quick Start (Simplified Workflow)
+---
 
-1. Navigate to your project directory:
+## quick start
+
 ```bash
-cd /path/to/your/project
-```
+# 1. go to your project folder
+cd /path/to/project
 
-2. Install all skills/templates to AI tool folders:
-```bash
+# 2. install all skills & workflows
 sdd-gen /install-all-skills
-```
 
-3. Initialize all documentation at once:
-```bash
+# 3. init docs for a feature
 sdd-gen /init user-authentication
-```
 
-4. Fill in the generated documents in AI tool folders (skills/, workflows/)
+# 4. fill in the generated docs, create DESIGN.md
 
-5. Create visual design tokens:
-```bash
-# Create docs/DESIGN.md (generic) or .windsurf/skills/user-authentication-DESIGN.md
-```
-
-6. Generate AI implementation prompt:
-```bash
+# 5. generate AI implementation prompt
 sdd-gen /implement-code user-authentication
-```
 
-7. Generate and setup Playwright tests:
-```bash
+# 6. generate & run playwright tests
 sdd-gen /qa-test-script user-authentication
 sdd-gen /qa-test-run user-authentication
 npm run qa-run:user-authentication
-```
 
-8. Generate QA report after testing:
-```bash
+# 7. generate QA report
 sdd-gen /qa-report user-authentication
 ```
 
-## 🔧 Commands
+---
 
-### `/install-all-skills`
-Install all templates to AI tool folders.
+## commands
 
-**What it does:**
-- Prompts to create AI tool folders if none exist (.windsurf, .opencode, .claude, .antigravity)
-- Copies all CLI templates to each AI tool's `_templates/` folder
-- Creates necessary subdirectories (skills/, workflows/, _templates/)
+| command | description | output |
+|---|---|---|
+| `/install-all-skills` | install all templates, skills, workflows | `skills/` `workflows/` |
+| `/init <feature>` | generate all docs at once | BRD + TECHNICAL + SPEC_TEST + REPORT |
+| `/brd <feature>` | generate Business Requirements Document | `[feature]-BRD.md` |
+| `/technical <feature>` | generate Technical Design Document | `[feature]-TECHNICAL_DESIGN.md` |
+| `/spec-test <feature>` | generate Playwright E2E test spec | `[feature]-SPEC_TEST.md` |
+| `/implement-code <feature>` | load DESIGN.md, generate AI prompt | stdout |
+| `/qa-test-script <feature>` | generate Playwright test script | `tests/[feature].spec.js` |
+| `/qa-test-run <feature>` | run Playwright test, update package.json | `qa-run:[feature]` script |
+| `/qa-report <feature>` | generate QA Report document | `[feature]-REPORT.md` |
 
-**Example:**
-```bash
-sdd-gen /install-all-skills
+---
+
+## skills & workflows
+
+### cluster 1 — the specs maker
+- `sdd-brd` — Business Requirements Document
+- `sdd-technical` — Technical Design Document
+- `sdd-spec-test` — Playwright E2E Test Spec
+
+### cluster 2 — the code preparator
+- `sdd-implement-code` — AI implementation prompt from DESIGN.md
+
+### cluster 3 — the QA engine
+- `sdd-qa-test-script` — generate Playwright test script
+- `sdd-qa-test-run` — run Playwright test (auto-install)
+- `sdd-qa-report` — generate QA Report
+
+> all skills & workflows available for Windsurf Cascade, Claude, OpenCode, and Antigravity.
+
+---
+
+## DESIGN.md lookup order
+
+`/implement-code` searches for DESIGN.md in this order:
+
+```
+docs/DESIGN.md
+docs/[feature]-DESIGN.md
+.windsurf/skills/[feature]-DESIGN.md
+.opencode/skills/[feature]-DESIGN.md
+.claude/skills/[feature]-DESIGN.md
+.antigravity/skills/[feature]-DESIGN.md
 ```
 
 ---
 
-### `/init <featureName>`
-Generate all documentation (BRD, Technical, Spec Test, QA Report) at once.
-
-**Output:** 
-- `.windsurf/skills/[featureName]-BRD.md`
-- `.windsurf/skills/[featureName]-TECHNICAL_DESIGN.md`
-- `.windsurf/workflows/[featureName]-SPEC_TEST.md`
-- `.windsurf/workflows/[featureName]-REPORT.md`
-- (Also generates to other AI tool folders if they exist)
-
-**Example:**
-```bash
-sdd-gen /init user-authentication
-```
-
-**What it does:**
-- Prompts to create AI tool folders if none exist
-- Generates all documentation templates in one command
-- Creates necessary subdirectories automatically
-- Shows next steps for implementation
-
----
-
-### `/brd <featureName>`
-Generate Business Requirements Document from template.
-
-**Output:** `.windsurf/skills/[featureName]-BRD.md` (and other AI tool folders)
-
-**Example:**
-```bash
-sdd-gen /brd user-authentication
-```
-
-**Template includes:**
-- Executive Summary
-- Stakeholder Analysis
-- Functional & Non-Functional Requirements
-- User Interface Requirements
-- Data Requirements
-- Integration Requirements
-- Business Rules
-- Risks & Mitigation
-- Success Metrics
-
----
-
-### `/technical <featureName>`
-Generate Technical Design Document from template.
-
-**Output:** `.windsurf/skills/[featureName]-TECHNICAL_DESIGN.md` (and other AI tool folders)
-
-**Example:**
-```bash
-sdd-gen /technical user-authentication
-```
-
-**Template includes:**
-- System Architecture
-- Database Design
-- API Design
-- Frontend Design
-- Security Design
-- Performance Considerations
-- Scalability Design
-- Monitoring & Logging
-- Deployment Strategy
-- Testing Strategy
-
----
-
-### `/spec-test <featureName>`
-Generate Playwright E2E Test Specification from template.
-
-**Output:** `.windsurf/workflows/[featureName]-SPEC_TEST.md` (and other AI tool folders)
-
-**Example:**
-```bash
-sdd-gen /spec-test user-authentication
-```
-
-**Template includes:**
-- Playwright Configuration
-- Page Object Model Structure
-- E2E Test Cases (User Flows, Form Validation, Navigation, API Integration, Responsive, Accessibility, Performance)
-- Test Data Management
-- Test Execution Commands
-- CI/CD Integration
-- Reporting & Debugging
-
----
-
-### `/implement-code <featureName>`
-Load DESIGN.md and generate AI implementation prompt.
-
-**Prerequisite:** DESIGN.md must exist in one of these locations:
-- `docs/DESIGN.md` (generic for entire project)
-- `docs/[featureName]-DESIGN.md` (feature-specific)
-- `.windsurf/skills/[featureName]-DESIGN.md`
-- `.opencode/skills/[featureName]-DESIGN.md`
-- `.claude/skills/[featureName]-DESIGN.md`
-- `.antigravity/skills/[featureName]-DESIGN.md`
-
-**Example:**
-```bash
-sdd-gen /implement-code user-authentication
-```
-
-**Output:** Terminal prompt for AI agents (Windsurf Cascade, Claude, OpenCode)
-
-**What it does:**
-- Reads DESIGN.md for visual tokens
-- Generates prompt combining design specs with BRD and Technical Design references
-- Provides instructions for full slice code implementation
-
----
-
-### `/qa-test-script <featureName>`
-Generate Playwright test script from SPEC_TEST document.
-
-**Prerequisite:** `[featureName]-SPEC_TEST.md` must exist in AI tool workflows folder
-
-**Output:** `tests/[featureName].spec.js`
-
-**Example:**
-```bash
-sdd-gen /qa-test-script user-authentication
-```
-
-**What it does:**
-- Reads SPEC_TEST.md content
-- Generates Playwright test script with basic structure
-- Includes test describe block and placeholder tests
-
----
-
-### `/qa-test-run <featureName>`
-Execute Playwright test and add script to package.json.
-
-**Prerequisite:** `tests/[featureName].spec.js` must exist
-
-**Output:** Adds script to `package.json` and provides execution command
-
-**Example:**
-```bash
-sdd-gen /qa-test-run user-authentication
-```
-
-**What it does:**
-- Auto-installs @playwright/test if not present
-- Auto-installs Playwright browsers if not present
-- Adds `qa-run:[featureName]` script to package.json
-- Provides command to run: `npm run qa-run:[featureName]`
-
----
-
-### `/qa-report <featureName>`
-Generate QA Report document from template.
-
-**Output:** `.windsurf/workflows/[featureName]-REPORT.md` (and other AI tool folders)
-
-**Example:**
-```bash
-sdd-gen /qa-report user-authentication
-```
-
-**Template includes:**
-- Test Execution Summary
-- Test Results Overview
-- Browser Test Results
-- Failed Tests
-- Flaky Tests
-- Performance Metrics
-- Coverage Report
-- Artifacts (Screenshots, Videos, Traces)
-- Issues Found
-- Fixes Applied
-- Regression Tests
-- Ship Readiness
-
-## 📁 Generated File Structure
+## file structure
 
 ```
 your-project/
 ├── .windsurf/
 │   ├── _templates/
-│   │   ├── brd-template.md
-│   │   ├── technical-template.md
-│   │   ├── spec-test-template.md
-│   │   └── qa-report-template.md
 │   ├── skills/
-│   │   ├── [featureName]-BRD.md
-│   │   ├── [featureName]-TECHNICAL_DESIGN.md
-│   │   └── [featureName]-DESIGN.md (manual)
+│   │   ├── sdd-*/              # skill definitions
+│   │   ├── [feature]-BRD.md
+│   │   └── [feature]-TECHNICAL_DESIGN.md
 │   └── workflows/
-│       ├── [featureName]-SPEC_TEST.md
-│       └── [featureName]-REPORT.md
-├── .opencode/ (same structure as .windsurf)
-├── .claude/ (same structure as .windsurf)
-├── .antigravity/ (same structure as .windsurf)
+│       ├── sdd-*.md            # workflow definitions
+│       ├── [feature]-SPEC_TEST.md
+│       └── [feature]-REPORT.md
+├── .opencode/                  # same structure
+├── .claude/                    # same structure
+├── .antigravity/               # same structure
 ├── docs/
-│   └── DESIGN.md (optional, generic design tokens)
+│   └── DESIGN.md
 ├── tests/
-│   └── [featureName].spec.js
-└── package.json (updated with qa-run script)
+│   └── [feature].spec.js
+└── package.json
 ```
 
-## 🛠️ Development
+---
 
-### Project Structure
+## cli source structure
 
 ```
 TVP-sdd-cli/
-├── index.js              # Main CLI entry point
-├── package.json          # Dependencies and configuration
-├── templates/            # Master templates
+├── index.js
+├── package.json
+├── templates/
 │   ├── brd-template.md
 │   ├── technical-template.md
 │   ├── spec-test-template.md
 │   └── qa-report-template.md
-└── README.md            # This file
+├── skill-templates/
+│   └── sdd-*/
+├── workflow-templates/
+│   └── sdd-*.md
+└── README.md
 ```
 
-### Dependencies
+---
 
-- `commander` - CLI framework
-- `inquirer` - Interactive command-line prompts
-- `fs-extra` - File system operations
-- `chalk` - Terminal styling
+## troubleshooting
 
-### Modifying Templates
-
-Edit files in the `templates/` directory to customize documentation templates. Changes will be reflected in all future generated documents.
-
-## 📝 Example Workflow
-
-Let's say you're building a "user-authentication" feature:
-
-```bash
-# 1. Install all skills/templates to AI tool folders
-sdd-gen /install-all-skills
-
-# 2. Initialize all documentation at once
-sdd-gen /init user-authentication
-
-# 3. Fill in the generated documents with your requirements
-# - .windsurf/skills/user-authentication-BRD.md
-# - .windsurf/skills/user-authentication-TECHNICAL_DESIGN.md
-# - .windsurf/workflows/user-authentication-SPEC_TEST.md
-# - .windsurf/workflows/user-authentication-REPORT.md
-
-# 4. Create visual design tokens
-# Create docs/DESIGN.md with colors, layout, etc.
-# OR create .windsurf/skills/user-authentication-DESIGN.md
-
-# 5. Generate AI prompt for implementation
-sdd-gen /implement-code user-authentication
-# Copy the output and paste to your AI agent
-
-# 6. Generate test script
-sdd-gen /qa-test-script user-authentication
-
-# 7. Customize the test script in tests/user-authentication.spec.js
-
-# 8. Setup test runner (auto-installs Playwright)
-sdd-gen /qa-test-run user-authentication
-
-# 9. Run tests
-npm run qa-run:user-authentication
-
-# 10. Generate QA report after testing
-sdd-gen /qa-report user-authentication
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📄 License
-
-MIT
-
-## 🆘 Troubleshooting
-
-### Command not found
-If `sdd-gen` command is not found, try:
+**`sdd-gen` not found**
 ```bash
 npm link
 ```
 
-### No AI tool folders found
-If you see "No AI tool folders found", the CLI will prompt you to create them. Select one or more of:
-- .windsurf
-- .opencode
-- .claude
-- .antigravity
+**no AI tool folders found**  
+CLI will prompt you to create a folder. pick one: `.windsurf` `.opencode` `.claude` `.antigravity`
 
-### Template not found
-Ensure you're in the CLI directory and templates exist:
-```bash
-ls templates/
-```
+**DESIGN.md not found**  
+check the lookup order above. make sure the file exists in one of those locations.
 
-### DESIGN.md not found
-The CLI searches for DESIGN.md in multiple locations:
-1. `docs/DESIGN.md` (generic)
-2. `docs/[featureName]-DESIGN.md` (feature-specific)
-3. `.windsurf/skills/[featureName]-DESIGN.md`
-4. `.opencode/skills/[featureName]-DESIGN.md`
-5. `.claude/skills/[featureName]-DESIGN.md`
-6. `.antigravity/skills/[featureName]-DESIGN.md`
-
-### Permission denied
-On some systems, you may need to run with elevated permissions:
+**permission denied**
 ```bash
 sudo npm link
 ```
 
-## 🔗 Links
+---
 
-- [Playwright Documentation](https://playwright.dev/)
-- [Commander.js Documentation](https://www.npmjs.com/package/commander)
-- [Inquirer.js Documentation](https://www.npmjs.com/package/inquirer)
+## references
+
+- [Playwright Docs](https://playwright.dev/)
+- [Commander.js](https://www.npmjs.com/package/commander)
+- [Inquirer.js](https://www.npmjs.com/package/inquirer)
 
 ---
 
-**Built with ❤️ for efficient software development workflows**
+```
+// © Talapvnk — unlicensed. don't copy without asking.
+```

@@ -11,6 +11,8 @@ const program = new Command();
 // Path configurations
 const CLI_DIR = __dirname; // Internal CLI directory
 const TEMPLATES_DIR = path.join(CLI_DIR, 'templates'); // Internal templates directory
+const SKILL_TEMPLATES_DIR = path.join(CLI_DIR, 'skill-templates'); // Internal skill templates directory
+const WORKFLOW_TEMPLATES_DIR = path.join(CLI_DIR, 'workflow-templates'); // Internal workflow templates directory
 const PROJECT_DIR = process.cwd(); // User's current working directory
 const TESTS_DIR = path.join(PROJECT_DIR, 'tests'); // User's tests directory
 
@@ -467,11 +469,45 @@ program
         }
       }
       
-      console.log(chalk.bold.cyan(`\n📝 Installation complete! Templates are now in:`));
+      // Copy skill definitions to each AI tool's skills folder
+      const skillTemplates = await fs.readdir(SKILL_TEMPLATES_DIR);
       for (const aiDir of existingDirs) {
-        console.log(chalk.yellow(`  - ${aiDir}/_templates/`));
+        const skillsTargetPath = path.join(PROJECT_DIR, aiDir, 'skills');
+        await fs.ensureDir(skillsTargetPath);
+        
+        for (const skillTemplate of skillTemplates) {
+          const skillSrcPath = path.join(SKILL_TEMPLATES_DIR, skillTemplate);
+          const skillDestPath = path.join(skillsTargetPath, skillTemplate);
+          
+          // Copy entire skill folder
+          await fs.copy(skillSrcPath, skillDestPath);
+          console.log(chalk.green(`✅ Copied skill: ${aiDir}/skills/${skillTemplate}/`));
+        }
       }
-      console.log(chalk.yellow(`\nSkills and workflows will be generated to:`));
+      
+      // Copy workflow definitions to each AI tool's workflows folder
+      const workflowTemplates = await fs.readdir(WORKFLOW_TEMPLATES_DIR);
+      for (const aiDir of existingDirs) {
+        const workflowsTargetPath = path.join(PROJECT_DIR, aiDir, 'workflows');
+        await fs.ensureDir(workflowsTargetPath);
+        
+        for (const workflowTemplate of workflowTemplates) {
+          const workflowSrcPath = path.join(WORKFLOW_TEMPLATES_DIR, workflowTemplate);
+          const workflowDestPath = path.join(workflowsTargetPath, workflowTemplate);
+          
+          // Copy workflow file
+          await fs.copy(workflowSrcPath, workflowDestPath);
+          console.log(chalk.green(`✅ Copied workflow: ${aiDir}/workflows/${workflowTemplate}`));
+        }
+      }
+      
+      console.log(chalk.bold.cyan(`\n📝 Installation complete! Templates, skills, and workflows are now in:`));
+      for (const aiDir of existingDirs) {
+        console.log(chalk.yellow(`  - ${aiDir}/_templates/ (document templates)`));
+        console.log(chalk.yellow(`  - ${aiDir}/skills/ (AI skill definitions)`));
+        console.log(chalk.yellow(`  - ${aiDir}/workflows/ (AI workflow definitions)`));
+      }
+      console.log(chalk.yellow(`\nDocumentation will be generated to:`));
       console.log(chalk.yellow(`  - ${existingDirs[0]}/skills/ (BRD, Technical Design)`));
       console.log(chalk.yellow(`  - ${existingDirs[0]}/workflows/ (Spec Test, QA Report)\n`));
       
