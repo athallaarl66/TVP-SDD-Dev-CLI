@@ -30,6 +30,38 @@ async function getExistingAIDirectories() {
   return existingDirs;
 }
 
+// Prompt user to create AI tool folders if none exist
+async function promptForAIFolders() {
+  const { selectedFolders } = await inquirer.prompt([
+    {
+      type: 'checkbox',
+      name: 'selectedFolders',
+      message: 'No AI tool folders found. Which folders do you want to create?',
+      choices: AI_DIRS,
+      validate: (answer) => {
+        if (answer.length < 1) {
+          return 'You must choose at least one folder.';
+        }
+        return true;
+      }
+    }
+  ]);
+
+  // Create selected folders and subdirectories
+  for (const folder of selectedFolders) {
+    const folderPath = path.join(PROJECT_DIR, folder);
+    await fs.ensureDir(folderPath);
+    
+    for (const subdir of AI_SUBDIRS) {
+      await fs.ensureDir(path.join(folderPath, subdir));
+    }
+    
+    console.log(chalk.green(`✅ Created folder: ${folder}/`));
+  }
+
+  return selectedFolders;
+}
+
 // Ensure directories exist
 async function ensureDirectories() {
   // Create tests directory
@@ -44,11 +76,9 @@ program
     try {
       await ensureDirectories();
       
-      const existingDirs = await getExistingAIDirectories();
+      let existingDirs = await getExistingAIDirectories();
       if (existingDirs.length === 0) {
-        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
-        console.error(chalk.yellow('Please create at least one of these folders first'));
-        process.exit(1);
+        existingDirs = await promptForAIFolders();
       }
       
       const templatePath = path.join(TEMPLATES_DIR, 'brd-template.md');
@@ -84,11 +114,9 @@ program
     try {
       await ensureDirectories();
       
-      const existingDirs = await getExistingAIDirectories();
+      let existingDirs = await getExistingAIDirectories();
       if (existingDirs.length === 0) {
-        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
-        console.error(chalk.yellow('Please create at least one of these folders first'));
-        process.exit(1);
+        existingDirs = await promptForAIFolders();
       }
       
       const templatePath = path.join(TEMPLATES_DIR, 'technical-template.md');
@@ -124,11 +152,9 @@ program
     try {
       await ensureDirectories();
       
-      const existingDirs = await getExistingAIDirectories();
+      let existingDirs = await getExistingAIDirectories();
       if (existingDirs.length === 0) {
-        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
-        console.error(chalk.yellow('Please create at least one of these folders first'));
-        process.exit(1);
+        existingDirs = await promptForAIFolders();
       }
       
       const templatePath = path.join(TEMPLATES_DIR, 'spec-test-template.md');
@@ -162,11 +188,9 @@ program
   .description('Load DESIGN.md and generate AI implementation prompt')
   .action(async (featureName) => {
     try {
-      const existingDirs = await getExistingAIDirectories();
+      let existingDirs = await getExistingAIDirectories();
       if (existingDirs.length === 0) {
-        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
-        console.error(chalk.yellow('Please create at least one of these folders first'));
-        process.exit(1);
+        existingDirs = await promptForAIFolders();
       }
       
       // Try to find DESIGN.md in any AI tool skills folder
@@ -215,11 +239,9 @@ program
     try {
       await ensureDirectories();
       
-      const existingDirs = await getExistingAIDirectories();
+      let existingDirs = await getExistingAIDirectories();
       if (existingDirs.length === 0) {
-        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
-        console.error(chalk.yellow('Please create at least one of these folders first'));
-        process.exit(1);
+        existingDirs = await promptForAIFolders();
       }
       
       // Try to find SPEC_TEST.md in any AI tool workflows folder
@@ -364,11 +386,9 @@ program
     try {
       await ensureDirectories();
       
-      const existingDirs = await getExistingAIDirectories();
+      let existingDirs = await getExistingAIDirectories();
       if (existingDirs.length === 0) {
-        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
-        console.error(chalk.yellow('Please create at least one of these folders first'));
-        process.exit(1);
+        existingDirs = await promptForAIFolders();
       }
       
       const templatePath = path.join(TEMPLATES_DIR, 'qa-report-template.md');
@@ -404,11 +424,9 @@ program
     try {
       await ensureDirectories();
       
-      const existingDirs = await getExistingAIDirectories();
+      let existingDirs = await getExistingAIDirectories();
       if (existingDirs.length === 0) {
-        console.error(chalk.red('Error: No AI tool folders found (.windsurf, .opencode, .claude, .antigravity)'));
-        console.error(chalk.yellow('Please create at least one of these folders first'));
-        process.exit(1);
+        existingDirs = await promptForAIFolders();
       }
       
       console.log(chalk.bold.cyan(`\n🚀 Initializing documentation for: ${featureName}\n`));
