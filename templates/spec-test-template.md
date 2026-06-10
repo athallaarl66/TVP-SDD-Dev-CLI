@@ -19,7 +19,7 @@
 [Define what is included and excluded from this E2E test specification]
 
 ### 1.3 References
-- [Link to BRD document]
+- [Link to PRD document]
 - [Link to Technical Design document]
 - [Link to other relevant documents]
 

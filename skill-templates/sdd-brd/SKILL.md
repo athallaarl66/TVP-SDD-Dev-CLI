@@ -1,6 +1,6 @@
 ---
-name: sdd-brd
-description: Generate Business Requirements Document (BRD) from template. Creates comprehensive business specs including executive summary, stakeholder analysis, functional/non-functional requirements, UI requirements, data requirements, integration requirements, business rules, risks, and success metrics.
+name: sdd-prd
+description: Generate Business Requirements Document (PRD) from template. Creates comprehensive business specs including executive summary, stakeholder analysis, functional/non-functional requirements, UI requirements, data requirements, integration requirements, business rules, risks, and success metrics.
 license: MIT
 compatibility: Requires TVP-SDD-Dev CLI.
 metadata:
@@ -9,13 +9,13 @@ metadata:
   generatedBy: "1.0"
 ---
 
-Generate Business Requirements Document (BRD) for a feature using the TVP-SDD-Dev CLI.
+Generate Product Requirements Document (PRD) for a feature using the TVP-SDD-Dev CLI.
 
 ## What This Skill Does
 
 When invoked, this skill will:
-1. Run the command: `sdd-gen /brd <featureName>`
-2. Generate a BRD document template in `.windsurf/skills/<featureName>-BRD.md`
+1. Run the command: `sdd-gen /prd <featureName>`
+2. Generate a PRD document template in `.windsurf/skills/<featureName>-PRD.md`
 3. The document will be generated to all existing AI tool folders (.windsurf, .opencode, .claude, .antigravity)
 
 ## When to Use
@@ -35,11 +35,11 @@ Provide the feature name as input:
 Feature name: user-authentication
 ```
 
-The skill will then execute the CLI command and generate the BRD document.
+The skill will then execute the CLI command and generate the PRD document.
 
 ## What Gets Generated
 
-The BRD document template includes:
+The PRD document template includes:
 - Executive Summary
 - Stakeholder Analysis
 - Functional Requirements
@@ -53,7 +53,7 @@ The BRD document template includes:
 
 ## After Generation
 
-After the BRD is generated, you should:
+After the PRD is generated, you should:
 1. Fill in the template with actual business requirements
 2. Review and refine stakeholder analysis
 3. Define clear success metrics

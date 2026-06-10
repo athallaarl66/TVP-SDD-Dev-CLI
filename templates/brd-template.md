@@ -1,4 +1,4 @@
-# Business Requirements Document (BRD)
+# Product Requirements Document (PPD)
 
 ## Document Information
 - **Document Version**: 1.0

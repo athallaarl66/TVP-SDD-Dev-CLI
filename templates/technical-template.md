@@ -19,7 +19,7 @@
 [Define what is included and excluded from this technical design]
 
 ### 1.3 References
-- [Link to BRD document]
+- [Link to PRD document]
 - [Link to other relevant documents]
 - [Technical standards or guidelines]
 

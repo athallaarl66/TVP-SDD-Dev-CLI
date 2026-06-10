@@ -70,4 +70,4 @@ After the Technical Design is generated, you should:
 - The CLI will prompt to create AI tool folders if none exist
 - The document is generated to all existing AI tool folders
 - The template provides structure - you need to fill in the actual content
-- This should be created after BRD to ensure business requirements are met
+- This should be created after PRD to ensure business requirements are met

@@ -797,7 +797,7 @@ program
         console.log(chalk.yellow(`  - ${aiDir}/workflows/ (AI workflow definitions)`));
       }
       console.log(chalk.yellow(`\nDocumentation will be generated to:`));
-      console.log(chalk.yellow(`  - ${existingDirs[0]}/skills/ (BRD, Technical Design)`));
+      console.log(chalk.yellow(`  - ${existingDirs[0]}/skills/ (PRD, Technical Design)`));
       console.log(chalk.yellow(`  - ${existingDirs[0]}/workflows/ (Spec Test, QA Report)\n`));
       
     } catch (error) {
@@ -809,7 +809,7 @@ program
 // Command 9: /init - Generate all documentation at once
 program
   .command('/init <featureName>')
-  .description('Generate all documentation (BRD, Technical, Spec Test, QA Report) at once')
+  .description('Generate all documentation (PRD, Technical, Spec Test, QA Report) at once')
   .action(async (featureName) => {
     try {
       await ensureDirectories();
