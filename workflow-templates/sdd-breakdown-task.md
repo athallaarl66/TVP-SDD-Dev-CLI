@@ -1,19 +1,15 @@
 ---
-name: sdd-breakdown-task
-description: Parse PRD and generate granular documentation per user acceptance. Creates scenario-level docs including production requirements, testing scenarios, design specifications, and technical specifications for each user story.
-license: MIT
-compatibility: Requires TVP-SDD-Dev CLI.
-metadata:
-  author: Talapvnk
-  version: "1.0"
-  generatedBy: "1.0"
+name: "SDD: Breakdown Task"
+description: "Parse PRD and generate scenario-level documentation. Creates granular docs per user acceptance including production requirements, testing scenarios, design specifications, and technical specifications using templates."
+category: Workflow
+tags: [workflow, documentation, breakdown, scenarios, implementation]
 ---
 
 Parse Product Requirements Document (PRD) and generate scenario-level documentation for each user acceptance using the TVP-SDD-Dev CLI.
 
-## What This Skill Does
+## What This Workflow Does
 
-When invoked, this skill will:
+When invoked, this workflow will:
 1. Run the command: `sdd-gen /sdd-breakdown-task <prd-file-path> [featureName]`
 2. Parse the PRD.md file to extract user stories and acceptance criteria
 3. Create folder structure: `docs/production/<feature-name>/`
@@ -23,16 +19,7 @@ When invoked, this skill will:
    - `<feature><num>-design.md` - Wireframe + Figma/Sketch links
    - `<feature><num>-tech.md` - API specs, seed data, permissions
 
-## When to Use
-
-Use this skill when you need to:
-- Break down a PRD into granular, implementable user acceptance scenarios
-- Generate scenario-level documentation for precise implementation
-- Create testing scenarios for each user acceptance
-- Define technical specifications at the scenario level
-- Establish design requirements for each user story
-
-## How to Use
+## Input
 
 Provide the PRD file path and optionally a feature name:
 ```
@@ -117,7 +104,7 @@ After the breakdown files are generated, you should:
 
 ## Error Handling
 
-The skill will handle these error cases:
+The workflow will handle these error cases:
 - PRD file not found → Error with message to run `/prd` first
 - PRD has no user stories → Warning message
 - Feature name provided but not found in PRD → Error with list of available features
@@ -132,4 +119,3 @@ The skill will handle these error cases:
 - If featureName is omitted, all user stories are processed and grouped by feature
 - This is the second step in the documentation workflow after PRD generation
 - The generated breakdown files are used by `/implement-code` command
-- Templates used: prod-template.md, testing-template.md, design-template.md, tech-template.md

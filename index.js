@@ -15,6 +15,10 @@ const SKILL_TEMPLATES_DIR = path.join(CLI_DIR, 'skill-templates'); // Internal s
 const WORKFLOW_TEMPLATES_DIR = path.join(CLI_DIR, 'workflow-templates'); // Internal workflow templates directory
 const PROJECT_DIR = process.cwd(); // User's current working directory
 const TESTS_DIR = path.join(PROJECT_DIR, 'tests'); // User's tests directory
+const DOCS_DIR = path.join(PROJECT_DIR, 'docs'); // User's docs directory
+const DOCS_FEATURES_DIR = path.join(DOCS_DIR, 'features'); // Features directory
+const DOCS_PRODUCTION_DIR = path.join(DOCS_DIR, 'production'); // Production breakdown directory
+const DOCS_TEST_REPORTS_DIR = path.join(DOCS_DIR, 'test-reports'); // Test reports directory
 
 // AI tool directories
 const AI_DIRS = ['.windsurf', '.opencode', '.claude', '.antigravity'];
@@ -68,6 +72,37 @@ async function promptForAIFolders() {
 async function ensureDirectories() {
   // Create tests directory
   await fs.ensureDir(TESTS_DIR);
+  
+  // Create docs directory structure
+  await fs.ensureDir(DOCS_DIR);
+  await fs.ensureDir(DOCS_FEATURES_DIR);
+  await fs.ensureDir(DOCS_PRODUCTION_DIR);
+  await fs.ensureDir(DOCS_TEST_REPORTS_DIR);
+  
+  // Create docs/README.md if it doesn't exist
+  const docsReadmePath = path.join(DOCS_DIR, 'README.md');
+  if (!(await fs.pathExists(docsReadmePath))) {
+    const docsReadmeContent = `# Documentation
+
+This directory contains all project documentation organized by type.
+
+## Structure
+
+- **features/** - Product Requirements Documents (PRD) and Technical Design documents
+- **production/** - Scenario-level breakdown files (prod, testing, design, tech)
+- **test-reports/** - QA test reports and spec test documents
+
+## Usage
+
+Documentation is generated using the TVP-SDD-Dev CLI commands:
+- \`sdd-gen /prd <featureName>\` - Generate PRD
+- \`sdd-gen /technical <featureName>\` - Generate Technical Design
+- \`sdd-gen /sdd-breakdown-task <prd-file> [featureName]\` - Generate scenario breakdowns
+- \`sdd-gen /spec-test <featureName>\` - Generate Spec Test
+- \`sdd-gen /qa-report <featureName>\` - Generate QA Report
+`;
+    await fs.writeFile(docsReadmePath, docsReadmeContent, 'utf-8');
+  }
 }
 
 // Command 1: /prd - Generate PRD document
@@ -77,11 +112,6 @@ program
   .action(async (featureName) => {
     try {
       await ensureDirectories();
-      
-      let existingDirs = await getExistingAIDirectories();
-      if (existingDirs.length === 0) {
-        existingDirs = await promptForAIFolders();
-      }
       
       const templatePath = path.join(TEMPLATES_DIR, 'prd-template.md');
       
@@ -94,13 +124,23 @@ program
       // Read template once
       const templateContent = await fs.readFile(templatePath, 'utf-8');
       
-      // Generate to existing AI tool skills folders
+      // Create feature directory in docs/features/
+      const featureDir = path.join(DOCS_FEATURES_DIR, featureName);
+      await fs.ensureDir(featureDir);
+      
+      // Generate PRD to docs/features/{featureName}/prd.md
+      const outputPath = path.join(featureDir, 'prd.md');
+      await fs.writeFile(outputPath, templateContent, 'utf-8');
+      console.log(chalk.green(`✅ PRD document created: ${outputPath}`));
+      
+      // Also generate to AI tool skills folders if they exist
+      let existingDirs = await getExistingAIDirectories();
       for (const aiDir of existingDirs) {
         const skillsPath = path.join(PROJECT_DIR, aiDir, 'skills');
         await fs.ensureDir(skillsPath);
-        const outputPath = path.join(skillsPath, `${featureName}-PRD.md`);
-        await fs.writeFile(outputPath, templateContent, 'utf-8');
-        console.log(chalk.green(`✅ PRD document created: ${outputPath}`));
+        const aiOutputPath = path.join(skillsPath, `${featureName}-PRD.md`);
+        await fs.writeFile(aiOutputPath, templateContent, 'utf-8');
+        console.log(chalk.green(`✅ PRD also copied to: ${aiOutputPath}`));
       }
     } catch (error) {
       console.error(chalk.red('Error generating PRD:'), error.message);
@@ -108,9 +148,9 @@ program
     }
   });
 
-// Command 2: /breakdown-task - Parse PRD and generate scenario-level documentation
+// Command 2: /sdd-breakdown-task - Parse PRD and generate scenario-level documentation
 program
-  .command('/breakdown-task <prdFile> [featureName]')
+  .command('/sdd-breakdown-task <prdFile> [featureName]')
   .description('Parse PRD and generate scenario-level documentation (prod, testing, design, tech)')
   .action(async (prdFile, featureName) => {
     try {
@@ -144,8 +184,8 @@ program
         process.exit(0);
       }
       
-      // Create output directory
-      const outputDir = path.join(PROJECT_DIR, 'docs', 'prod', featureName);
+      // Create output directory in docs/production/
+      const outputDir = path.join(DOCS_PRODUCTION_DIR, featureName);
       await fs.ensureDir(outputDir);
       
       console.log(chalk.bold.cyan(`\n🚀 Breaking down PRD for: ${featureName}\n`));
@@ -325,8 +365,8 @@ program
       // Format num with leading zero if needed
       const formattedNum = String(num).padStart(2, '0');
       
-      // Check for breakdown files
-      const breakdownDir = path.join(PROJECT_DIR, 'docs', 'prod', featureName);
+      // Check for breakdown files in docs/production/
+      const breakdownDir = path.join(DOCS_PRODUCTION_DIR, featureName);
       const prodFile = path.join(breakdownDir, `${featureName}${formattedNum}-prod.md`);
       const techFile = path.join(breakdownDir, `${featureName}${formattedNum}-tech.md`);
       const designFile = path.join(breakdownDir, `${featureName}${formattedNum}-design.md`);
@@ -335,13 +375,13 @@ program
       // Check required breakdown files
       if (!(await fs.pathExists(prodFile))) {
         console.error(chalk.red(`Error: Breakdown file not found: ${prodFile}`));
-        console.error(chalk.yellow(`Run 'sdd-gen /breakdown-task <prd-file> ${featureName}' first to generate breakdown files`));
+        console.error(chalk.yellow(`Run 'sdd-gen /sdd-breakdown-task <prd-file> ${featureName}' first to generate breakdown files`));
         process.exit(1);
       }
       
       if (!(await fs.pathExists(techFile))) {
         console.error(chalk.red(`Error: Breakdown file not found: ${techFile}`));
-        console.error(chalk.yellow(`Run 'sdd-gen /breakdown-task <prd-file> ${featureName}' first to generate breakdown files`));
+        console.error(chalk.yellow(`Run 'sdd-gen /sdd-breakdown-task <prd-file> ${featureName}' first to generate breakdown files`));
         process.exit(1);
       }
       
@@ -545,8 +585,14 @@ program
         existingDirs = await promptForAIFolders();
       }
       
-      // Try to find SPEC_TEST.md in any AI tool workflows folder
+      // Try to find SPEC_TEST.md in docs/test-reports/ first, then AI tool workflows folders
       let specTestPath = null;
+      
+      // 1. Check docs/test-reports/{featureName}/{featureName}-spec-test.md
+      const docsSpecTestPath = path.join(DOCS_TEST_REPORTS_DIR, featureName, `${featureName}-spec-test.md`);
+      if (await fs.pathExists(docsSpecTestPath)) {
+        specTestPath = docsSpecTestPath;
+      }
       for (const aiDir of existingDirs) {
         const potentialPath = path.join(PROJECT_DIR, aiDir, 'workflows', `${featureName}-SPEC_TEST.md`);
         if (await fs.pathExists(potentialPath)) {
@@ -556,7 +602,7 @@ program
       }
       
       if (!specTestPath) {
-        console.error(chalk.red(`Error: ${featureName}-SPEC_TEST.md not found in AI tool workflows folders`));
+        console.error(chalk.red(`Error: ${featureName}-spec-test.md not found in docs/test-reports/ or AI tool workflows folders`));
         console.error(chalk.yellow(`Run 'sdd-gen /spec-test ${featureName}' first to generate the spec test document`));
         process.exit(1);
       }
@@ -687,11 +733,6 @@ program
     try {
       await ensureDirectories();
       
-      let existingDirs = await getExistingAIDirectories();
-      if (existingDirs.length === 0) {
-        existingDirs = await promptForAIFolders();
-      }
-      
       const templatePath = path.join(TEMPLATES_DIR, 'qa-report-template.md');
       
       // Check if template exists
@@ -703,13 +744,23 @@ program
       // Read template once
       const templateContent = await fs.readFile(templatePath, 'utf-8');
       
-      // Generate to existing AI tool workflows folders
+      // Create feature directory in docs/test-reports/
+      const testReportDir = path.join(DOCS_TEST_REPORTS_DIR, featureName);
+      await fs.ensureDir(testReportDir);
+      
+      // Generate QA Report to docs/test-reports/{featureName}/{featureName}-qa-report.md
+      const outputPath = path.join(testReportDir, `${featureName}-qa-report.md`);
+      await fs.writeFile(outputPath, templateContent, 'utf-8');
+      console.log(chalk.green(`✅ QA Report document created: ${outputPath}`));
+      
+      // Also generate to AI tool workflows folders if they exist
+      let existingDirs = await getExistingAIDirectories();
       for (const aiDir of existingDirs) {
         const workflowsPath = path.join(PROJECT_DIR, aiDir, 'workflows');
         await fs.ensureDir(workflowsPath);
-        const outputPath = path.join(workflowsPath, `${featureName}-REPORT.md`);
-        await fs.writeFile(outputPath, templateContent, 'utf-8');
-        console.log(chalk.green(`✅ QA Report document created: ${outputPath}`));
+        const aiOutputPath = path.join(workflowsPath, `${featureName}-REPORT.md`);
+        await fs.writeFile(aiOutputPath, templateContent, 'utf-8');
+        console.log(chalk.green(`✅ QA Report also copied to: ${aiOutputPath}`));
       }
     } catch (error) {
       console.error(chalk.red('Error generating QA Report:'), error.message);
@@ -723,11 +774,40 @@ program
   .description('Install all templates, skills, and workflows to AI tool folders')
   .action(async () => {
     try {
-      let existingDirs = await getExistingAIDirectories();
-      if (existingDirs.length === 0) {
-        existingDirs = await promptForAIFolders();
-      }
+      // Always prompt for AI tool selection with animation
+      console.log(chalk.bold.cyan(`\n🎯 Select AI Tools to Install Skills\n`));
       
+      const { selectedTools } = await inquirer.prompt([
+        {
+          type: 'checkbox',
+          name: 'selectedTools',
+          message: 'Which AI tools do you want to install skills to?',
+          choices: [
+            { name: '🌊 Windsurf Cascade', value: '.windsurf' },
+            { name: '🔓 OpenCode', value: '.opencode' },
+            { name: '🤖 Claude', value: '.claude' },
+            { name: '🚀 Antigravity', value: '.antigravity' }
+          ],
+          default: ['.windsurf']
+        }
+      ]);
+
+      if (selectedTools.length === 0) {
+        console.log(chalk.yellow('⚠️  No AI tools selected. Exiting...\n'));
+        return;
+      }
+
+      // Create selected folders and subdirectories
+      for (const tool of selectedTools) {
+        const folderPath = path.join(PROJECT_DIR, tool);
+        await fs.ensureDir(folderPath);
+        
+        for (const subdir of AI_SUBDIRS) {
+          await fs.ensureDir(path.join(folderPath, subdir));
+        }
+      }
+
+      // Animation for installation
       console.log(chalk.bold.cyan(`
 ████████╗██╗   ██╗██████╗       ███████╗██████╗ ██████╗
 ╚══██╔══╝██║   ██║██╔══██╗      ██╔════╝██╔══██╗██╔══██╗
@@ -741,10 +821,19 @@ program
       
       console.log(chalk.gray(`authored by Talapvnk · version 1.0.0 · unlicensed\n`));
       
-      console.log(chalk.bold.cyan(`🚀 Installing all skills to AI tool folders: ${existingDirs.join(', ')}\n`));
+      console.log(chalk.bold.cyan(`🚀 Installing all skills to: ${selectedTools.join(', ')}\n`));
+      
+      // Animated installation
+      const animationFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+      let frameIndex = 0;
+      
+      const animate = (message) => {
+        process.stdout.write(`\r${animationFrames[frameIndex]} ${message}`);
+        frameIndex = (frameIndex + 1) % animationFrames.length;
+      };
       
       // Copy CLI templates to each AI tool's _templates folder
-      for (const aiDir of existingDirs) {
+      for (const aiDir of selectedTools) {
         const templatesTargetPath = path.join(PROJECT_DIR, aiDir, '_templates');
         await fs.ensureDir(templatesTargetPath);
         
@@ -753,14 +842,21 @@ program
         for (const templateFile of cliTemplates) {
           const srcPath = path.join(TEMPLATES_DIR, templateFile);
           const destPath = path.join(templatesTargetPath, templateFile);
+          
+          // Animation during copy
+          for (let i = 0; i < 3; i++) {
+            animate(`Copying ${aiDir}/_templates/${templateFile}...`);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+          
           await fs.copy(srcPath, destPath);
-          console.log(chalk.green(`✅ Copied template: ${aiDir}/_templates/${templateFile}`));
+          process.stdout.write(`\r✅ Copied template: ${aiDir}/_templates/${templateFile}\n`);
         }
       }
       
       // Copy skill definitions to each AI tool's skills folder
       const skillTemplates = await fs.readdir(SKILL_TEMPLATES_DIR);
-      for (const aiDir of existingDirs) {
+      for (const aiDir of selectedTools) {
         const skillsTargetPath = path.join(PROJECT_DIR, aiDir, 'skills');
         await fs.ensureDir(skillsTargetPath);
         
@@ -768,15 +864,21 @@ program
           const skillSrcPath = path.join(SKILL_TEMPLATES_DIR, skillTemplate);
           const skillDestPath = path.join(skillsTargetPath, skillTemplate);
           
+          // Animation during copy
+          for (let i = 0; i < 3; i++) {
+            animate(`Copying ${aiDir}/skills/${skillTemplate}/...`);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+          
           // Copy entire skill folder
           await fs.copy(skillSrcPath, skillDestPath);
-          console.log(chalk.green(`✅ Copied skill: ${aiDir}/skills/${skillTemplate}/`));
+          process.stdout.write(`\r✅ Copied skill: ${aiDir}/skills/${skillTemplate}/\n`);
         }
       }
       
       // Copy workflow definitions to each AI tool's workflows folder
       const workflowTemplates = await fs.readdir(WORKFLOW_TEMPLATES_DIR);
-      for (const aiDir of existingDirs) {
+      for (const aiDir of selectedTools) {
         const workflowsTargetPath = path.join(PROJECT_DIR, aiDir, 'workflows');
         await fs.ensureDir(workflowsTargetPath);
         
@@ -784,21 +886,27 @@ program
           const workflowSrcPath = path.join(WORKFLOW_TEMPLATES_DIR, workflowTemplate);
           const workflowDestPath = path.join(workflowsTargetPath, workflowTemplate);
           
+          // Animation during copy
+          for (let i = 0; i < 3; i++) {
+            animate(`Copying ${aiDir}/workflows/${workflowTemplate}...`);
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+          
           // Copy workflow file
           await fs.copy(workflowSrcPath, workflowDestPath);
-          console.log(chalk.green(`✅ Copied workflow: ${aiDir}/workflows/${workflowTemplate}`));
+          process.stdout.write(`\r✅ Copied workflow: ${aiDir}/workflows/${workflowTemplate}\n`);
         }
       }
       
       console.log(chalk.bold.cyan(`\n📝 Installation complete! Templates, skills, and workflows are now in:`));
-      for (const aiDir of existingDirs) {
+      for (const aiDir of selectedTools) {
         console.log(chalk.yellow(`  - ${aiDir}/_templates/ (document templates)`));
         console.log(chalk.yellow(`  - ${aiDir}/skills/ (AI skill definitions)`));
         console.log(chalk.yellow(`  - ${aiDir}/workflows/ (AI workflow definitions)`));
       }
       console.log(chalk.yellow(`\nDocumentation will be generated to:`));
-      console.log(chalk.yellow(`  - ${existingDirs[0]}/skills/ (PRD, Technical Design)`));
-      console.log(chalk.yellow(`  - ${existingDirs[0]}/workflows/ (Spec Test, QA Report)\n`));
+      console.log(chalk.yellow(`  - ${selectedTools[0]}/skills/ (PRD, Technical Design)`));
+      console.log(chalk.yellow(`  - ${selectedTools[0]}/workflows/ (Spec Test, QA Report)\n`));
       
     } catch (error) {
       console.error(chalk.red('Error installing skills:'), error.message);

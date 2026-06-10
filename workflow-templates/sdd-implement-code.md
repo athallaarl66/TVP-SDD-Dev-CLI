@@ -11,7 +11,7 @@ Generate skill.md with role prompts and trigger implementation using breakdown f
 
 When invoked, this workflow will:
 1. Run the command: `sdd-gen /implement-code <featureName> <num>`
-2. Search for breakdown files in `docs/prod/<featureName>/<feature><num>-*.md`
+2. Search for breakdown files in `docs/production/<featureName>/<feature><num>-*.md`
 3. Optionally search for DESIGN.md (if exists) for visual tokens
 4. Generate a skill.md file with role prompt and file references
 5. Trigger implementation (similar to openspec apply workflow)
@@ -29,17 +29,17 @@ User acceptance number: 01
 The skill.md file includes:
 - Role prompt: "You are a senior IT fullstack software engineer architect..."
 - File references to breakdown files:
-  - `docs/prod/<featureName>/<feature><num>-prod.md`
-  - `docs/prod/<featureName>/<feature><num>-tech.md`
-  - `docs/prod/<featureName>/<feature><num>-design.md` (optional)
-  - `docs/prod/<featureName>/<feature><num>-testing.md` (optional)
+  - `docs/production/<featureName>/<feature><num>-prod.md`
+  - `docs/production/<featureName>/<feature><num>-tech.md`
+  - `docs/production/<featureName>/<feature><num>-design.md` (optional)
+  - `docs/production/<featureName>/<feature><num>-testing.md` (optional)
 - Optional DESIGN.md content if exists
 - Instructions for full slice code production (Database, API, Frontend UI Component with reactive state, and SEO Metadata)
 
 ## Prerequisites
 
 Before using this workflow, ensure:
-- Breakdown files exist in `docs/prod/<featureName>/`:
+- Breakdown files exist in `docs/production/<featureName>/`:
   - `<feature><num>-prod.md` (required)
   - `<feature><num>-tech.md` (required)
   - `<feature><num>-design.md` (optional)
@@ -51,10 +51,10 @@ Before using this workflow, ensure:
 
 ### Breakdown Files (required)
 ```
-docs/prod/<featureName>/<feature><num>-prod.md
-docs/prod/<featureName>/<feature><num>-tech.md
-docs/prod/<featureName>/<feature><num>-design.md (optional)
-docs/prod/<featureName>/<feature><num>-testing.md (optional)
+docs/production/<featureName>/<feature><num>-prod.md
+docs/production/<featureName>/<feature><num>-tech.md
+docs/production/<featureName>/<feature><num>-design.md (optional)
+docs/production/<featureName>/<feature><num>-testing.md (optional)
 ```
 
 ### DESIGN.md (optional)

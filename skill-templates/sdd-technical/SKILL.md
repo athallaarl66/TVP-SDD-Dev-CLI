@@ -15,8 +15,8 @@ Generate Technical Design Document (TDD) for a feature using the TVP-SDD-Dev CLI
 
 When invoked, this skill will:
 1. Run the command: `sdd-gen /technical <featureName>`
-2. Generate a TDD document template in `.windsurf/skills/<featureName>-TECHNICAL_DESIGN.md`
-3. The document will be generated to all existing AI tool folders (.windsurf, .opencode, .claude, .antigravity)
+2. Generate a TDD document template in `docs/features/{featureName}/technical.md`
+3. The document will also be copied to AI tool folders (.windsurf, .opencode, .claude, .antigravity) if they exist
 
 ## When to Use
 
@@ -67,7 +67,7 @@ After the Technical Design is generated, you should:
 
 ## Notes
 
-- The CLI will prompt to create AI tool folders if none exist
-- The document is generated to all existing AI tool folders
+- The document is generated to `docs/features/{featureName}/technical.md`
+- The document is also copied to AI tool folders if they exist
 - The template provides structure - you need to fill in the actual content
 - This should be created after PRD to ensure business requirements are met

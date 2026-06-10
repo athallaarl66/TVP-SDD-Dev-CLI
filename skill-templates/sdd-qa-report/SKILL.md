@@ -73,8 +73,8 @@ After the QA Report is generated, you should:
 
 ## Notes
 
-- The CLI will prompt to create AI tool folders if none exist
-- The document is generated to all existing AI tool folders
+- The document is generated to `docs/test-reports/{featureName}/{featureName}-qa-report.md`
+- The document is also copied to AI tool folders if they exist
 - The template provides structure - you need to fill in actual test results
 - This should be created after test execution is complete
 - The report serves as formal documentation for stakeholders

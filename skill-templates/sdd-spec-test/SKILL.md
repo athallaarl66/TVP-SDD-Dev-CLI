@@ -63,7 +63,7 @@ After the Spec Test is generated, you should:
 
 ## Notes
 
-- The CLI will prompt to create AI tool folders if none exist
-- The document is generated to all existing AI tool folders
+- The document is generated to `docs/test-reports/{featureName}/{featureName}-spec-test.md`
+- The document is also copied to AI tool folders if they exist
 - The template provides structure - you need to fill in the actual content
 - This should be created after Technical Design to ensure test coverage
