@@ -6,6 +6,9 @@ const fs = require('fs-extra');
 const path = require('path');
 const chalk = require('chalk');
 
+// Fix for inquirer v9+ in CommonJS
+const prompt = inquirer.prompt || inquirer.default?.prompt || inquirer;
+
 const program = new Command();
 
 // Path configurations
@@ -774,10 +777,10 @@ program
   .description('Install all templates, skills, and workflows to AI tool folders')
   .action(async () => {
     try {
-      // Always prompt for AI tool selection with animation
+      // Always prompt for AI tool selth animation
       console.log(chalk.bold.cyan(`\n🎯 Select AI Tools to Install Skills\n`));
       
-      const { selectedTools } = await inquirer.prompt([
+      const { selectedTools } = await prompt([
         {
           type: 'checkbox',
           name: 'selectedTools',
