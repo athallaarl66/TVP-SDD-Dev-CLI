@@ -70,10 +70,10 @@ async function ensureDirectories() {
   await fs.ensureDir(TESTS_DIR);
 }
 
-// Command 1: /brd - Generate BRD document
+// Command 1: /prd - Generate PRD document
 program
-  .command('/brd <featureName>')
-  .description('Generate BRD document from template')
+  .command('/prd <featureName>')
+  .description('Generate PRD document from template')
   .action(async (featureName) => {
     try {
       await ensureDirectories();
@@ -83,11 +83,11 @@ program
         existingDirs = await promptForAIFolders();
       }
       
-      const templatePath = path.join(TEMPLATES_DIR, 'brd-template.md');
+      const templatePath = path.join(TEMPLATES_DIR, 'prd-template.md');
       
       // Check if template exists
       if (!(await fs.pathExists(templatePath))) {
-        console.error(chalk.red('Error: brd-template.md not found in CLI templates directory'));
+        console.error(chalk.red('Error: prd-template.md not found in CLI templates directory'));
         process.exit(1);
       }
       
@@ -98,17 +98,149 @@ program
       for (const aiDir of existingDirs) {
         const skillsPath = path.join(PROJECT_DIR, aiDir, 'skills');
         await fs.ensureDir(skillsPath);
-        const outputPath = path.join(skillsPath, `${featureName}-BRD.md`);
+        const outputPath = path.join(skillsPath, `${featureName}-PRD.md`);
         await fs.writeFile(outputPath, templateContent, 'utf-8');
-        console.log(chalk.green(`✅ BRD document created: ${outputPath}`));
+        console.log(chalk.green(`✅ PRD document created: ${outputPath}`));
       }
     } catch (error) {
-      console.error(chalk.red('Error generating BRD:'), error.message);
+      console.error(chalk.red('Error generating PRD:'), error.message);
       process.exit(1);
     }
   });
 
-// Command 2: /technical - Generate Technical Design document
+// Command 2: /breakdown-task - Parse PRD and generate scenario-level documentation
+program
+  .command('/breakdown-task <prdFile> [featureName]')
+  .description('Parse PRD and generate scenario-level documentation (prod, testing, design, tech)')
+  .action(async (prdFile, featureName) => {
+    try {
+      // Resolve PRD file path
+      const prdPath = path.resolve(PROJECT_DIR, prdFile);
+      
+      // Check if PRD file exists
+      if (!(await fs.pathExists(prdPath))) {
+        console.error(chalk.red(`Error: PRD file not found: ${prdFile}`));
+        console.error(chalk.yellow(`Run 'sdd-gen /prd <featureName>' first to generate the PRD document`));
+        process.exit(1);
+      }
+      
+      // Read PRD content
+      const prdContent = await fs.readFile(prdPath, 'utf-8');
+      
+      // Extract feature name from PRD if not provided
+      if (!featureName) {
+        // Try to extract feature name from PRD filename
+        const prdFileName = path.basename(prdFile, '.md');
+        featureName = prdFileName.replace('-PRD', '').replace('-prd', '');
+        console.log(chalk.yellow(`No feature name provided, using extracted name: ${featureName}`));
+      }
+      
+      // Parse user stories from PRD
+      const userStories = parseUserStories(prdContent);
+      
+      if (userStories.length === 0) {
+        console.error(chalk.yellow('Warning: No user stories found in PRD'));
+        console.log(chalk.yellow('Make sure your PRD has a "User Stories" section with user story format'));
+        process.exit(0);
+      }
+      
+      // Create output directory
+      const outputDir = path.join(PROJECT_DIR, 'docs', 'prod', featureName);
+      await fs.ensureDir(outputDir);
+      
+      console.log(chalk.bold.cyan(`\n🚀 Breaking down PRD for: ${featureName}\n`));
+      console.log(chalk.yellow(`Found ${userStories.length} user stories\n`));
+      
+      // Generate files for each user acceptance
+      for (let i = 0; i < userStories.length; i++) {
+        const num = String(i + 1).padStart(2, '0');
+        const story = userStories[i];
+        
+        console.log(chalk.cyan(`Processing user acceptance ${num}: ${story.title}`));
+        
+        // Generate prod.md
+        const prodTemplatePath = path.join(TEMPLATES_DIR, 'prod-template.md');
+        if (await fs.pathExists(prodTemplatePath)) {
+          const prodTemplate = await fs.readFile(prodTemplatePath, 'utf-8');
+          const prodContent = prodTemplate.replace(/<Feature><num>/g, `${featureName}${num}`);
+          const prodPath = path.join(outputDir, `${featureName}${num}-prod.md`);
+          await fs.writeFile(prodPath, prodContent, 'utf-8');
+          console.log(chalk.green(`  ✅ Created: ${featureName}${num}-prod.md`));
+        }
+        
+        // Generate testing.md
+        const testingTemplatePath = path.join(TEMPLATES_DIR, 'testing-template.md');
+        if (await fs.pathExists(testingTemplatePath)) {
+          const testingTemplate = await fs.readFile(testingTemplatePath, 'utf-8');
+          const testingContent = testingTemplate.replace(/<Feature><num>/g, `${featureName}${num}`);
+          const testingPath = path.join(outputDir, `${featureName}${num}-testing.md`);
+          await fs.writeFile(testingPath, testingContent, 'utf-8');
+          console.log(chalk.green(`  ✅ Created: ${featureName}${num}-testing.md`));
+        }
+        
+        // Generate design.md
+        const designTemplatePath = path.join(TEMPLATES_DIR, 'design-template.md');
+        if (await fs.pathExists(designTemplatePath)) {
+          const designTemplate = await fs.readFile(designTemplatePath, 'utf-8');
+          const designContent = designTemplate.replace(/<Feature><num>/g, `${featureName}${num}`);
+          const designPath = path.join(outputDir, `${featureName}${num}-design.md`);
+          await fs.writeFile(designPath, designContent, 'utf-8');
+          console.log(chalk.green(`  ✅ Created: ${featureName}${num}-design.md`));
+        }
+        
+        // Generate tech.md
+        const techTemplatePath = path.join(TEMPLATES_DIR, 'tech-template.md');
+        if (await fs.pathExists(techTemplatePath)) {
+          const techTemplate = await fs.readFile(techTemplatePath, 'utf-8');
+          const techContent = techTemplate.replace(/<Feature><num>/g, `${featureName}${num}`);
+          const techPath = path.join(outputDir, `${featureName}${num}-tech.md`);
+          await fs.writeFile(techPath, techContent, 'utf-8');
+          console.log(chalk.green(`  ✅ Created: ${featureName}${num}-tech.md`));
+        }
+      }
+      
+      console.log(chalk.bold.cyan(`\n📝 Breakdown complete! Files generated in: ${outputDir}\n`));
+      console.log(chalk.yellow(`Next steps:\n`));
+      console.log(chalk.yellow(`1. Fill in the generated breakdown files with scenario-specific details`));
+      console.log(chalk.yellow(`2. Run: sdd-gen /implement-code ${featureName} <num>\n`));
+      
+    } catch (error) {
+      console.error(chalk.red('Error generating breakdown files:'), error.message);
+      process.exit(1);
+    }
+  });
+
+// Helper function to parse user stories from PRD
+function parseUserStories(prdContent) {
+  const userStories = [];
+  const lines = prdContent.split('\n');
+  let currentStory = null;
+  
+  for (const line of lines) {
+    // Detect user story headers (e.g., "#### User Story 1" or "### User Story: Login")
+    const storyMatch = line.match(/####\s+User\s+Story\s+(\d+)/i) || line.match(/###\s+User\s+Story:\s*(.+)/i);
+    
+    if (storyMatch) {
+      if (currentStory) {
+        userStories.push(currentStory);
+      }
+      currentStory = {
+        title: storyMatch[2] || `Story ${storyMatch[1]}`,
+        content: ''
+      };
+    } else if (currentStory) {
+      currentStory.content += line + '\n';
+    }
+  }
+  
+  if (currentStory) {
+    userStories.push(currentStory);
+  }
+  
+  return userStories;
+}
+
+// Command 3: /technical - Generate Technical Design document
 program
   .command('/technical <featureName>')
   .description('Generate Technical Design document from template')
@@ -184,13 +316,39 @@ program
     }
   });
 
-// Command 4: /implement-code - Load DESIGN.md and generate AI prompt
+// Command 4: /implement-code - Generate skill.md and trigger implementation
 program
-  .command('/implement-code <featureName>')
-  .description('Load DESIGN.md and generate AI implementation prompt')
-  .action(async (featureName) => {
+  .command('/implement-code <featureName> <num>')
+  .description('Generate skill.md with role prompts and trigger implementation using breakdown files')
+  .action(async (featureName, num) => {
     try {
-      // Try to find DESIGN.md in multiple locations (in order of priority)
+      // Format num with leading zero if needed
+      const formattedNum = String(num).padStart(2, '0');
+      
+      // Check for breakdown files
+      const breakdownDir = path.join(PROJECT_DIR, 'docs', 'prod', featureName);
+      const prodFile = path.join(breakdownDir, `${featureName}${formattedNum}-prod.md`);
+      const techFile = path.join(breakdownDir, `${featureName}${formattedNum}-tech.md`);
+      const designFile = path.join(breakdownDir, `${featureName}${formattedNum}-design.md`);
+      const testingFile = path.join(breakdownDir, `${featureName}${formattedNum}-testing.md`);
+      
+      // Check required breakdown files
+      if (!(await fs.pathExists(prodFile))) {
+        console.error(chalk.red(`Error: Breakdown file not found: ${prodFile}`));
+        console.error(chalk.yellow(`Run 'sdd-gen /breakdown-task <prd-file> ${featureName}' first to generate breakdown files`));
+        process.exit(1);
+      }
+      
+      if (!(await fs.pathExists(techFile))) {
+        console.error(chalk.red(`Error: Breakdown file not found: ${techFile}`));
+        console.error(chalk.yellow(`Run 'sdd-gen /breakdown-task <prd-file> ${featureName}' first to generate breakdown files`));
+        process.exit(1);
+      }
+      
+      console.log(chalk.bold.cyan(`\n🚀 Implementing: ${featureName}${formattedNum}\n`));
+      console.log(chalk.yellow(`Found breakdown files in: ${breakdownDir}\n`));
+      
+      // Try to find DESIGN.md (optional)
       let designPath = null;
       let designLocation = '';
       
@@ -227,34 +385,152 @@ program
         }
       }
       
-      if (!designPath) {
-        console.error(chalk.red('Error: File DESIGN.md wajib ada sebagai acuan visual!'));
-        console.error(chalk.yellow(`Expected path (any of these):`));
-        console.error(chalk.yellow(`  - docs/DESIGN.md (generic for entire project)`));
-        console.error(chalk.yellow(`  - docs/${featureName}-DESIGN.md (feature-specific)`));
-        console.error(chalk.yellow(`  - .windsurf/skills/${featureName}-DESIGN.md`));
-        console.error(chalk.yellow(`  - .opencode/skills/${featureName}-DESIGN.md`));
-        console.error(chalk.yellow(`  - .claude/skills/${featureName}-DESIGN.md`));
-        console.error(chalk.yellow(`  - .antigravity/skills/${featureName}-DESIGN.md`));
-        process.exit(1);
+      if (designPath) {
+        console.log(chalk.green(`✅ Found DESIGN.md: ${designPath}`));
+      } else {
+        console.log(chalk.yellow(`⚠️  DESIGN.md not found (optional - proceeding without visual tokens)`));
       }
       
-      // Read DESIGN.md content
-      const designContent = await fs.readFile(designPath, 'utf-8');
+      // Generate skill.md file
+      let existingDirs = await getExistingAIDirectories();
+      if (existingDirs.length === 0) {
+        existingDirs = await promptForAIFolders();
+      }
       
-      // Generate and display the AI prompt
-      console.log(chalk.bold('\n🎨 DESIGN TOKENS LOADED! Silakan jalankan AI Agent (Windsurf Cascade / Claude / OpenCode) dengan prompt berikut:\n'));
-      console.log(chalk.bold.white('\'Woi AI, gunakan token visual, warna, dan layout dari DESIGN.md berikut sebagai standar wajib:'));
-      console.log(chalk.bold.cyan('\n' + designContent));
+      const skillContent = generateSkillContent(featureName, formattedNum, prodFile, techFile, designFile, testingFile, designPath);
       
-      // Determine the path for BRD and TECHNICAL_DESIGN files
-      console.log(chalk.bold.white(`\nSekarang, silakan kamu baca secara MANUAL file \`${designLocation}/${featureName}-BRD.md\` dan \`${designLocation}/${featureName}-TECHNICAL_DESIGN.md\`. Implementasikan FULL SLICE CODE PRODUCTION (Database, API, Frontend UI Component dengan reactive state, dan SEO Metadata sekaligus) mengikuti alur bisnis dan teknis dari kedua file tersebut!\'`));
+      // Write skill.md to AI tool skills folders
+      for (const aiDir of existingDirs) {
+        const skillsPath = path.join(PROJECT_DIR, aiDir, 'skills');
+        await fs.ensureDir(skillsPath);
+        const skillPath = path.join(skillsPath, `${featureName}${formattedNum}-skill.md`);
+        await fs.writeFile(skillPath, skillContent, 'utf-8');
+        console.log(chalk.green(`✅ Skill file created: ${skillPath}`));
+      }
+      
+      console.log(chalk.bold.cyan(`\n📝 Skill file generated! Implementation triggered.\n`));
+      console.log(chalk.yellow(`The AI agent can now invoke the skill file to implement ${featureName}${formattedNum}.\n`));
       
     } catch (error) {
-      console.error(chalk.red('Error loading DESIGN.md:'), error.message);
+      console.error(chalk.red('Error generating skill file:'), error.message);
       process.exit(1);
     }
   });
+
+// Helper function to generate skill.md content
+function generateSkillContent(featureName, num, prodFile, techFile, designFile, testingFile, designPath) {
+  let content = `---
+name: implement-${featureName}${num}
+description: Implement user acceptance ${num} for ${featureName} based on breakdown files
+license: MIT
+compatibility: Requires TVP-SDD-Dev CLI.
+metadata:
+  author: Talapvnk
+  version: "1.0"
+  generatedBy: "sdd-gen /implement-code"
+---
+
+You are a senior IT fullstack software engineer architect with expertise in:
+
+- Database design and optimization
+- API development (REST/GraphQL)
+- Frontend development with reactive state management
+- SEO optimization and metadata
+- Security best practices
+- Performance optimization
+- Testing and quality assurance
+
+## Task
+
+Implement user acceptance ${num} for feature "${featureName}" following the specifications in the breakdown files.
+
+## Required Files
+
+Read and implement based on these files:
+
+1. **Production Requirements**: \`${prodFile}\`
+   - User acceptance criteria
+   - Business value and success metrics
+   - User persona and journey
+
+2. **Technical Specifications**: \`${techFile}\`
+   - API endpoints
+   - Database changes
+   - Permissions and dependencies
+   - Impact analysis
+
+`;
+
+  // Add optional files
+  if (designFile) {
+    content += `3. **Design Specifications**: \`${designFile}\` (if exists)
+   - Wireframe and design references
+   - UI components and visual guidelines
+
+`;
+  }
+
+  if (testingFile) {
+    content += `4. **Testing Scenarios**: \`${testingFile}\` (if exists)
+   - Test cases and edge cases
+   - Acceptance criteria verification
+
+`;
+  }
+
+  // Add DESIGN.md if exists
+  if (designPath) {
+    content += `## Visual Design Tokens
+
+Use the following visual tokens from DESIGN.md as mandatory standards:
+
+\`\`\`
+(Read DESIGN.md content from: ${designPath})
+\`\`\`
+
+`;
+  }
+
+  content += `## Implementation Requirements
+
+Implement FULL SLICE CODE PRODUCTION including:
+
+1. **Database**
+   - Create/modify tables as specified
+   - Add seed data if required
+   - Create migrations
+
+2. **API**
+   - Implement all specified endpoints
+   - Add proper error handling
+   - Implement authentication/authorization if required
+
+3. **Frontend UI Components**
+   - Build reactive UI components
+   - Implement state management
+   - Follow design specifications
+   - Ensure responsive design
+
+4. **SEO Metadata**
+   - Add proper meta tags
+   - Implement structured data if required
+   - Ensure proper semantic HTML
+
+5. **Testing**
+   - Follow testing scenarios from breakdown files
+   - Handle edge cases
+
+## Notes
+
+- Follow the business logic and technical specifications from the breakdown files
+- Use visual tokens from DESIGN.md if available
+- Ensure code is production-ready and follows best practices
+- Add proper error handling and validation
+- Write clean, maintainable, and well-documented code
+`;
+
+  return content;
+}
 
 // Command 5: /qa-test-script - Generate Playwright test script from SPEC_TEST
 program
@@ -547,7 +823,7 @@ program
       console.log(chalk.yellow(`Found AI tool folders: ${existingDirs.join(', ')}\n`));
       
       const templates = [
-        { name: 'BRD', template: 'brd-template.md', output: `${featureName}-BRD.md`, subdir: 'skills' },
+        { name: 'PRD', template: 'prd-template.md', output: `${featureName}-PRD.md`, subdir: 'skills' },
         { name: 'Technical Design', template: 'technical-template.md', output: `${featureName}-TECHNICAL_DESIGN.md`, subdir: 'skills' },
         { name: 'Spec Test', template: 'spec-test-template.md', output: `${featureName}-SPEC_TEST.md`, subdir: 'workflows' },
         { name: 'QA Report', template: 'qa-report-template.md', output: `${featureName}-REPORT.md`, subdir: 'workflows' }

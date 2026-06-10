@@ -23,7 +23,8 @@
 ## what is this
 
 CLI tool to make development documentation faster and easier.
-Generates BRD, Technical Design, Spec Test, and QA Report automatically.
+Generates PRD, Technical Design, Spec Test, and QA Report automatically.
+Breaks down PRD into scenario-level documentation for granular implementation.
 Integrated with Playwright for E2E testing.
 Works with AI tool folders: `.windsurf` `.opencode` `.claude` `.antigravity`
 
@@ -54,20 +55,25 @@ cd /path/to/project
 # 2. install all skills & workflows
 sdd-gen /install-all-skills
 
-# 3. init docs for a feature
-sdd-gen /init user-authentication
+# 3. generate PRD for a feature
+sdd-gen /prd user-authentication
 
-# 4. fill in the generated docs, create DESIGN.md
+# 4. fill in the PRD with user stories
 
-# 5. generate AI implementation prompt
-sdd-gen /implement-code user-authentication
+# 5. breakdown PRD into scenario-level docs
+sdd-gen /breakdown-task .windsurf/skills/user-authentication-PRD.md user-authentication
 
-# 6. generate & run playwright tests
+# 6. fill in the breakdown files (prod, testing, design, tech)
+
+# 7. generate skill.md and trigger implementation
+sdd-gen /implement-code user-authentication 01
+
+# 8. generate & run playwright tests
 sdd-gen /qa-test-script user-authentication
 sdd-gen /qa-test-run user-authentication
 npm run qa-run:user-authentication
 
-# 7. generate QA report
+# 9. generate QA report
 sdd-gen /qa-report user-authentication
 ```
 
@@ -78,11 +84,12 @@ sdd-gen /qa-report user-authentication
 | command | description | output |
 |---|---|---|
 | `/install-all-skills` | install all templates, skills, workflows | `skills/` `workflows/` |
-| `/init <feature>` | generate all docs at once | BRD + TECHNICAL + SPEC_TEST + REPORT |
-| `/brd <feature>` | generate Business Requirements Document | `[feature]-BRD.md` |
+| `/init <feature>` | generate all docs at once | PRD + TECHNICAL + SPEC_TEST + REPORT |
+| `/prd <feature>` | generate Product Requirements Document | `[feature]-PRD.md` |
+| `/breakdown-task <prd-file> [feature]` | parse PRD, generate scenario-level docs | `docs/prod/<feature>/` |
 | `/technical <feature>` | generate Technical Design Document | `[feature]-TECHNICAL_DESIGN.md` |
 | `/spec-test <feature>` | generate Playwright E2E test spec | `[feature]-SPEC_TEST.md` |
-| `/implement-code <feature>` | load DESIGN.md, generate AI prompt | stdout |
+| `/implement-code <feature> <num>` | generate skill.md, trigger implementation | `[feature]<num>-skill.md` |
 | `/qa-test-script <feature>` | generate Playwright test script | `tests/[feature].spec.js` |
 | `/qa-test-run <feature>` | run Playwright test, update package.json | `qa-run:[feature]` script |
 | `/qa-report <feature>` | generate QA Report document | `[feature]-REPORT.md` |
@@ -92,14 +99,17 @@ sdd-gen /qa-report user-authentication
 ## skills & workflows
 
 ### cluster 1 — the specs maker
-- `sdd-brd` — Business Requirements Document
+- `sdd-prd` — Product Requirements Document
 - `sdd-technical` — Technical Design Document
 - `sdd-spec-test` — Playwright E2E Test Spec
 
-### cluster 2 — the code preparator
-- `sdd-implement-code` — AI implementation prompt from DESIGN.md
+### cluster 2 — the breakdown preparator
+- `sdd-breakdown-task` — Parse PRD, generate scenario-level docs
 
-### cluster 3 — the QA engine
+### cluster 3 — the code preparator
+- `sdd-implement-code` — Generate skill.md with role prompts, trigger implementation
+
+### cluster 4 — the QA engine
 - `sdd-qa-test-script` — generate Playwright test script
 - `sdd-qa-test-run` — run Playwright test (auto-install)
 - `sdd-qa-report` — generate QA Report
@@ -108,9 +118,9 @@ sdd-gen /qa-report user-authentication
 
 ---
 
-## DESIGN.md lookup order
+## DESIGN.md lookup order (optional)
 
-`/implement-code` searches for DESIGN.md in this order:
+`/implement-code` optionally searches for DESIGN.md in this order for visual tokens:
 
 ```
 docs/DESIGN.md
@@ -120,6 +130,8 @@ docs/[feature]-DESIGN.md
 .claude/skills/[feature]-DESIGN.md
 .antigravity/skills/[feature]-DESIGN.md
 ```
+
+> DESIGN.md is optional. Features can be implemented using breakdown files (prod, tech) without visual design documents.
 
 ---
 
@@ -131,8 +143,9 @@ your-project/
 │   ├── _templates/
 │   ├── skills/
 │   │   ├── sdd-*/              # skill definitions
-│   │   ├── [feature]-BRD.md
-│   │   └── [feature]-TECHNICAL_DESIGN.md
+│   │   ├── [feature]-PRD.md
+│   │   ├── [feature]-TECHNICAL_DESIGN.md
+│   │   └── [feature]<num>-skill.md
 │   └── workflows/
 │       ├── sdd-*.md            # workflow definitions
 │       ├── [feature]-SPEC_TEST.md
@@ -141,7 +154,13 @@ your-project/
 ├── .claude/                    # same structure
 ├── .antigravity/               # same structure
 ├── docs/
-│   └── DESIGN.md
+│   ├── DESIGN.md               # optional visual design
+│   └── prod/
+│       └── [feature]/
+│           ├── [feature]<num>-prod.md
+│           ├── [feature]<num>-testing.md
+│           ├── [feature]<num>-design.md
+│           └── [feature]<num>-tech.md
 ├── tests/
 │   └── [feature].spec.js
 └── package.json
@@ -156,7 +175,11 @@ TVP-sdd-cli/
 ├── index.js
 ├── package.json
 ├── templates/
-│   ├── brd-template.md
+│   ├── prd-template.md
+│   ├── prod-template.md
+│   ├── testing-template.md
+│   ├── design-template.md
+│   ├── tech-template.md
 │   ├── technical-template.md
 │   ├── spec-test-template.md
 │   └── qa-report-template.md
@@ -180,7 +203,10 @@ npm link
 CLI will prompt you to create a folder. pick one: `.windsurf` `.opencode` `.claude` `.antigravity`
 
 **DESIGN.md not found**  
-check the lookup order above. make sure the file exists in one of those locations.
+DESIGN.md is optional. If not found, implementation will proceed using breakdown files only. Check the lookup order above if you want to include visual tokens.
+
+**breakdown files not found**  
+Run `sdd-gen /breakdown-task <prd-file> <feature>` first to generate scenario-level documentation.
 
 **permission denied**
 ```bash
