@@ -12,7 +12,7 @@ Generate QA Report document from template using the TVP-SDD-Dev CLI.
 When invoked, this workflow will:
 1. Run the command: `sdd-gen /qa-report <featureName>`
 2. Generate a QA Report document template in `docs/test-reports/{featureName}/{featureName}-qa-report.md`
-3. The document will also be copied to AI tool folders (.windsurf, .opencode, .claude, .antigravity) if they exist
+3. The document will also be copied to AI tool folders (.devin, .opencode, .claude, .antigravity) if they exist
 
 ## Input
 

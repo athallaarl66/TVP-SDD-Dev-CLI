@@ -15,8 +15,8 @@ Generate QA Report document from template using the TVP-SDD-Dev CLI.
 
 When invoked, this skill will:
 1. Run the command: `sdd-gen /qa-report <featureName>`
-2. Generate a QA Report document template in `.windsurf/workflows/<featureName>-REPORT.md`
-3. The document will be generated to all existing AI tool folders (.windsurf, .opencode, .claude, .antigravity)
+2. Generate a QA Report document template in `.devin/workflows/<featureName>-REPORT.md`
+3. The document will be generated to all existing AI tool folders (.devin, .opencode, .claude, .antigravity)
 
 ## When to Use
 

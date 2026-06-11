@@ -12,7 +12,7 @@ Generate Product Requirements Document (PRD) for a feature using the TVP-SDD-Dev
 When invoked, this workflow will:
 1. Run the command: `sdd-gen /prd <featureName>`
 2. Generate a PRD document template in `docs/features/{featureName}/prd.md`
-3. The document will also be copied to AI tool folders (.windsurf, .opencode, .claude, .antigravity) if they exist
+3. The document will also be copied to AI tool folders (.devin, .opencode, .claude, .antigravity) if they exist
 
 ## Input
 

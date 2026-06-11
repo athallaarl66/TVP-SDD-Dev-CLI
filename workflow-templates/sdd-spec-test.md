@@ -12,7 +12,7 @@ Generate Playwright E2E Test Specification for a feature using the TVP-SDD-Dev C
 When invoked, this workflow will:
 1. Run the command: `sdd-gen /spec-test <featureName>`
 2. Generate a Spec Test document template in `docs/test-reports/{featureName}/{featureName}-spec-test.md`
-3. The document will also be copied to AI tool folders (.windsurf, .opencode, .claude, .antigravity) if they exist
+3. The document will also be copied to AI tool folders (.devin, .opencode, .claude, .antigravity) if they exist
 
 ## Input
 

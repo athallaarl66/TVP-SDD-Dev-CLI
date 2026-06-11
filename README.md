@@ -26,7 +26,7 @@ CLI tool to make development documentation faster and easier.
 Generates PRD, Technical Design, Spec Test, and QA Report automatically.
 Breaks down PRD into scenario-level documentation for granular implementation.
 Integrated with Playwright for E2E testing.
-Works with AI tool folders: `.windsurf` `.opencode` `.claude` `.antigravity`
+Works with AI tool folders: `.devin` `.opencode` `.claude` `.antigravity`
 
 ---
 
@@ -46,6 +46,30 @@ sdd-gen --help
 
 ---
 
+## how to run
+
+After installation, you can use the CLI from any project directory:
+
+```bash
+# From your project directory
+cd /path/to/your-project
+
+# Install skills & workflows (first time setup)
+sdd-gen /install-all-skills
+
+# Generate documentation
+sdd-gen /prd <feature-name>
+sdd-gen /technical <feature-name>
+sdd-gen /spec-test <feature-name>
+
+# Or generate all at once
+sdd-gen /init <feature-name>
+```
+
+The CLI will automatically detect and create AI tool folders (`.devin`, `.opencode`, `.claude`, `.antigravity`) if they don't exist.
+
+---
+
 ## quick start
 
 ```bash
@@ -61,7 +85,7 @@ sdd-gen /prd user-authentication
 # 4. fill in the PRD with user stories
 
 # 5. breakdown PRD into scenario-level docs
-sdd-gen /breakdown-task .windsurf/skills/user-authentication-PRD.md user-authentication
+sdd-gen /breakdown-task .devin/skills/user-authentication-PRD.md user-authentication
 
 # 6. fill in the breakdown files (prod, testing, design, tech)
 
@@ -114,7 +138,7 @@ sdd-gen /qa-report user-authentication
 - `sdd-qa-test-run` — run Playwright test (auto-install)
 - `sdd-qa-report` — generate QA Report
 
-> all skills & workflows available for Windsurf Cascade, Claude, OpenCode, and Antigravity.
+> all skills & workflows available for Devin Cascade, Claude, OpenCode, and Antigravity.
 
 ---
 
@@ -125,7 +149,7 @@ sdd-gen /qa-report user-authentication
 ```
 docs/DESIGN.md
 docs/[feature]-DESIGN.md
-.windsurf/skills/[feature]-DESIGN.md
+.devin/skills/[feature]-DESIGN.md
 .opencode/skills/[feature]-DESIGN.md
 .claude/skills/[feature]-DESIGN.md
 .antigravity/skills/[feature]-DESIGN.md
@@ -139,7 +163,7 @@ docs/[feature]-DESIGN.md
 
 ```
 your-project/
-├── .windsurf/
+├── .devin/
 │   ├── _templates/
 │   ├── skills/
 │   │   ├── sdd-*/              # skill definitions
@@ -200,7 +224,7 @@ npm link
 ```
 
 **no AI tool folders found**  
-CLI will prompt you to create a folder. pick one: `.windsurf` `.opencode` `.claude` `.antigravity`
+CLI will prompt you to create a folder. pick one: `.devin` `.opencode` `.claude` `.antigravity`
 
 **DESIGN.md not found**  
 DESIGN.md is optional. If not found, implementation will proceed using breakdown files only. Check the lookup order above if you want to include visual tokens.

@@ -33,7 +33,7 @@ The Playwright test script includes:
 ## Prerequisites
 
 Before using this workflow, ensure:
-- SPEC_TEST.md exists in AI tool workflows folder (.windsurf/workflows/, .opencode/workflows/, etc.)
+- SPEC_TEST.md exists in AI tool workflows folder (.devin/workflows/, .opencode/workflows/, etc.)
 - The SPEC_TEST.md has been filled with test scenarios
 - The tests/ directory exists (will be created if not)
 

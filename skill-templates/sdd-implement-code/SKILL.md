@@ -75,7 +75,7 @@ docs/prod/<featureName>/<feature><num>-testing.md (optional)
 ```
 docs/DESIGN.md
 docs/<featureName>-DESIGN.md
-.windsurf/skills/<featureName>-DESIGN.md
+.devin/skills/<featureName>-DESIGN.md
 .opencode/skills/<featureName>-DESIGN.md
 .claude/skills/<featureName>-DESIGN.md
 .antigravity/skills/<featureName>-DESIGN.md
