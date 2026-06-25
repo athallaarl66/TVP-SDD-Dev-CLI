@@ -14,7 +14,7 @@
 ---
 
 **authored by** · `Talapvnk`  
-**version** · `1.1.0`  
+**version** · `1.1.1`  
 **license** · `unlicensed — all rights reserved`  
 **status** · `maintained`
 
@@ -92,9 +92,9 @@ sdd-gen /prd user-authentication
 # 4. fill in the PRD with user stories
 
 # 5. breakdown PRD into scenario-level docs
-sdd-gen /breakdown-task docs/features/user-authentication/prd.md user-authentication
+sdd-gen /breakdown-task docs/features/user-authentication-prd.md user-authentication
 
-# 6. fill in the breakdown files (prod, testing, design, tech)
+# 6. fill in the breakdown files (prod, tech, design, testing)
 
 # 7. generate feature-level design
 sdd-gen /feature-design user-authentication
@@ -119,11 +119,11 @@ sdd-gen /qa-report user-authentication
 |---|---|---|
 | `/install-all-skills` | install skills & workflows to AI tool folders (for AI tools) | `.devin/skills/` `.devin/workflows/` etc. |
 | `/design-system` | generate global Design System documentation | `docs/DESIGN.md` |
-| `/feature-design <feature>` | generate feature-level design documentation | `docs/features/{feature}/{feature}-DESIGN.md` |
-| `/init <feature>` | generate all docs at once to docs/ folder | PRD + TECHNICAL + SPEC_TEST + REPORT |
-| `/prd <feature>` | generate Product Requirements Document to docs/ | `docs/features/{feature}/prd.md` |
+| `/feature-design <feature>` | generate feature-level design documentation | `docs/features/{feature}-design.md` |
+| `/init <feature>` | generate all docs at once to docs/ folder | PRD + TECH + SPEC_TEST + REPORT |
+| `/prd <feature>` | generate Product Requirements Document to docs/ | `docs/features/{feature}-prd.md` |
 | `/breakdown-task <prd-file> [feature]` | parse PRD, generate scenario-level docs to docs/ | `docs/production/{feature}/` |
-| `/technical <feature>` | generate Technical Design Document to docs/ | `docs/features/{feature}/technical.md` |
+| `/technical <feature>` | generate Technical Design document to docs/ | `docs/features/{feature}-technical.md` |
 | `/spec-test <feature>` | generate Playwright E2E test spec to docs/ | `docs/test-reports/{feature}/{feature}-spec-test.md` |
 | `/implement-code <feature> <num>` | generate skill.md to docs/ | `docs/production/{feature}/{feature}<num>-skill.md` |
 | `/qa-test-script <feature>` | generate Playwright test script to tests/ | `tests/{feature}.spec.js` |
@@ -178,25 +178,29 @@ your-project/
 ├── .devin/
 │   ├── _templates/
 │   ├── skills/
-│   │   ├── sdd-*/              # skill definitions
-│   │   ├── [feature]-PRD.md
-│   │   ├── [feature]-TECHNICAL_DESIGN.md
-│   │   └── [feature]<num>-skill.md
+│   │   └── sdd-*/              # skill definitions
 │   └── workflows/
-│       ├── sdd-*.md            # workflow definitions
-│       ├── [feature]-SPEC_TEST.md
-│       └── [feature]-REPORT.md
+│       └── sdd-*.md            # workflow definitions
 ├── .opencode/                  # same structure
 ├── .claude/                    # same structure
 ├── .antigravity/               # same structure
 ├── docs/
-│   ├── DESIGN.md               # optional visual design
-│   └── prod/
+│   ├── DESIGN.md               # global design system
+│   ├── features/
+│   │   ├── {feature}-prd.md
+│   │   ├── {feature}-technical.md
+│   │   └── {feature}-design.md
+│   ├── production/
+│   │   └── [feature]/
+│   │       ├── [feature]01-prod.md
+│   │       ├── [feature]01-tech.md
+│   │       ├── [feature]01-design.md
+│   │       ├── [feature]01-testing.md
+│   │       └── [feature]01-skill.md
+│   └── test-reports/
 │       └── [feature]/
-│           ├── [feature]<num>-prod.md
-│           ├── [feature]<num>-testing.md
-│           ├── [feature]<num>-design.md
-│           └── [feature]<num>-tech.md
+│           ├── [feature]-spec-test.md
+│           └── [feature]-qa-report.md
 ├── tests/
 │   └── [feature].spec.js
 └── package.json
@@ -237,6 +241,8 @@ TVP-sdd-cli/
 | | | - Added `/feature-design` command for feature-level design |
 | | | - All documentation commands generate to `docs/` folder |
 | | | - `/install-all-skills` installs to AI tool folders (`.devin`, `.opencode`, `.claude`, `.antigravity`) |
+| | | - Updated naming convention: flat features folder `{feature}-prd.md`, `{feature}-technical.md`, `{feature}-design.md` |
+| | | - Breakdown files order: `prod`, `tech`, `design`, `testing` |
 | 1.0.0 | 2026-06-25 | Initial release |
 | | | - Windsurf → Devin migration with automatic detection |
 | | | - Modular command structure (`lib/commands/`) |
