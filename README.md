@@ -236,12 +236,18 @@ TVP-sdd-cli/
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1.1 | 2026-06-25 | Update features folder to flat structure |
+| | | - Changed features folder from nested to flat structure |
+| | | - /prd outputs to docs/features/{feature}-prd.md (flat) |
+| | | - /technical outputs to docs/features/{feature}-technical.md (flat) |
+| | | - /feature-design outputs to docs/features/{feature}-design.md (flat) |
+| | | - /init outputs all to flat features folder |
+| | | - Production and test-reports remain nested (scenario-level) |
 | 1.1.0 | 2026-06-25 | Added Design System and Feature Design documentation |
 | | | - Added `/design-system` command for global design system |
 | | | - Added `/feature-design` command for feature-level design |
 | | | - All documentation commands generate to `docs/` folder |
 | | | - `/install-all-skills` installs to AI tool folders (`.devin`, `.opencode`, `.claude`, `.antigravity`) |
-| | | - Updated naming convention: flat features folder `{feature}-prd.md`, `{feature}-technical.md`, `{feature}-design.md` |
 | | | - Breakdown files order: `prod`, `tech`, `design`, `testing` |
 | 1.0.0 | 2026-06-25 | Initial release |
 | | | - Windsurf → Devin migration with automatic detection |
