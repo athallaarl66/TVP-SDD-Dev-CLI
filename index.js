@@ -15,6 +15,8 @@ const { registerQATestRunCommand } = require('./lib/commands/qa-test-run');
 const { registerQAReportCommand } = require('./lib/commands/qa-report');
 const { registerInstallCommand } = require('./lib/commands/install');
 const { registerInitCommand } = require('./lib/commands/init');
+const { registerDesignSystemCommand } = require('./lib/commands/design-system');
+const { registerFeatureDesignCommand } = require('./lib/commands/feature-design');
 
 // Register all commands
 registerPrdCommand(program);
@@ -27,6 +29,8 @@ registerQATestRunCommand(program);
 registerQAReportCommand(program);
 registerInstallCommand(program);
 registerInitCommand(program);
+registerDesignSystemCommand(program);
+registerFeatureDesignCommand(program);
 
 // Parse arguments
 program.parse(process.argv);

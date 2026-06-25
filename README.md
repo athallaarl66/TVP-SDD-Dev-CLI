@@ -14,7 +14,7 @@
 ---
 
 **authored by** · `Talapvnk`  
-**version** · `1.0.0`  
+**version** · `1.1.0`  
 **license** · `unlicensed — all rights reserved`  
 **status** · `maintained`
 
@@ -27,6 +27,7 @@ Generates PRD, Technical Design, Spec Test, and QA Report automatically.
 Breaks down PRD into scenario-level documentation for granular implementation.
 Integrated with Playwright for E2E testing.
 Works with AI tool folders: `.devin` `.opencode` `.claude` `.antigravity`
+Includes Design System and Feature Design documentation.
 
 ---
 
@@ -54,19 +55,25 @@ After installation, you can use the CLI from any project directory:
 # From your project directory
 cd /path/to/your-project
 
-# Install skills & workflows (first time setup)
+# Step 1: Install skills & workflows to AI tool folders (for AI tools)
 sdd-gen /install-all-skills
 
-# Generate documentation
+# Step 2: Generate global design system (first time setup)
+sdd-gen /design-system
+
+# Step 3: Generate documentation to docs/ folder
 sdd-gen /prd <feature-name>
 sdd-gen /technical <feature-name>
+sdd-gen /feature-design <feature-name>
 sdd-gen /spec-test <feature-name>
 
 # Or generate all at once
 sdd-gen /init <feature-name>
 ```
 
-The CLI will automatically detect and create AI tool folders (`.devin`, `.opencode`, `.claude`, `.antigravity`) if they don't exist.
+**Important:**
+- `/install-all-skills` → Installs skills/workflows to AI tool folders (`.devin`, `.opencode`, `.claude`, `.antigravity`) for AI tools
+- Documentation commands → Generate documentation to `docs/` folder for human reference
 
 ---
 
@@ -76,8 +83,8 @@ The CLI will automatically detect and create AI tool folders (`.devin`, `.openco
 # 1. go to your project folder
 cd /path/to/project
 
-# 2. install all skills & workflows
-sdd-gen /install-all-skills
+# 2. generate global design system (first time setup)
+sdd-gen /design-system
 
 # 3. generate PRD for a feature
 sdd-gen /prd user-authentication
@@ -85,19 +92,22 @@ sdd-gen /prd user-authentication
 # 4. fill in the PRD with user stories
 
 # 5. breakdown PRD into scenario-level docs
-sdd-gen /breakdown-task .devin/skills/user-authentication-PRD.md user-authentication
+sdd-gen /breakdown-task docs/features/user-authentication/prd.md user-authentication
 
 # 6. fill in the breakdown files (prod, testing, design, tech)
 
-# 7. generate skill.md and trigger implementation
+# 7. generate feature-level design
+sdd-gen /feature-design user-authentication
+
+# 8. generate skill.md and trigger implementation
 sdd-gen /implement-code user-authentication 01
 
-# 8. generate & run playwright tests
+# 9. generate & run playwright tests
 sdd-gen /qa-test-script user-authentication
 sdd-gen /qa-test-run user-authentication
 npm run qa-run:user-authentication
 
-# 9. generate QA report
+# 10. generate QA report
 sdd-gen /qa-report user-authentication
 ```
 
@@ -107,16 +117,18 @@ sdd-gen /qa-report user-authentication
 
 | command | description | output |
 |---|---|---|
-| `/install-all-skills` | install all templates, skills, workflows | `skills/` `workflows/` |
-| `/init <feature>` | generate all docs at once | PRD + TECHNICAL + SPEC_TEST + REPORT |
-| `/prd <feature>` | generate Product Requirements Document | `[feature]-PRD.md` |
-| `/breakdown-task <prd-file> [feature]` | parse PRD, generate scenario-level docs | `docs/prod/<feature>/` |
-| `/technical <feature>` | generate Technical Design Document | `[feature]-TECHNICAL_DESIGN.md` |
-| `/spec-test <feature>` | generate Playwright E2E test spec | `[feature]-SPEC_TEST.md` |
-| `/implement-code <feature> <num>` | generate skill.md, trigger implementation | `[feature]<num>-skill.md` |
-| `/qa-test-script <feature>` | generate Playwright test script | `tests/[feature].spec.js` |
-| `/qa-test-run <feature>` | run Playwright test, update package.json | `qa-run:[feature]` script |
-| `/qa-report <feature>` | generate QA Report document | `[feature]-REPORT.md` |
+| `/install-all-skills` | install skills & workflows to AI tool folders (for AI tools) | `.devin/skills/` `.devin/workflows/` etc. |
+| `/design-system` | generate global Design System documentation | `docs/DESIGN.md` |
+| `/feature-design <feature>` | generate feature-level design documentation | `docs/features/{feature}/{feature}-DESIGN.md` |
+| `/init <feature>` | generate all docs at once to docs/ folder | PRD + TECHNICAL + SPEC_TEST + REPORT |
+| `/prd <feature>` | generate Product Requirements Document to docs/ | `docs/features/{feature}/prd.md` |
+| `/breakdown-task <prd-file> [feature]` | parse PRD, generate scenario-level docs to docs/ | `docs/production/{feature}/` |
+| `/technical <feature>` | generate Technical Design Document to docs/ | `docs/features/{feature}/technical.md` |
+| `/spec-test <feature>` | generate Playwright E2E test spec to docs/ | `docs/test-reports/{feature}/{feature}-spec-test.md` |
+| `/implement-code <feature> <num>` | generate skill.md to docs/ | `docs/production/{feature}/{feature}<num>-skill.md` |
+| `/qa-test-script <feature>` | generate Playwright test script to tests/ | `tests/{feature}.spec.js` |
+| `/qa-test-run <feature>` | run Playwright test, update package.json | `qa-run:{feature}` script |
+| `/qa-report <feature>` | generate QA Report document to docs/ | `docs/test-reports/{feature}/{feature}-qa-report.md` |
 
 ---
 
@@ -213,6 +225,22 @@ TVP-sdd-cli/
 │   └── sdd-*.md
 └── README.md
 ```
+
+---
+
+## version history
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1.0 | 2026-06-25 | Added Design System and Feature Design documentation |
+| | | - Added `/design-system` command for global design system |
+| | | - Added `/feature-design` command for feature-level design |
+| | | - All documentation commands generate to `docs/` folder |
+| | | - `/install-all-skills` installs to AI tool folders (`.devin`, `.opencode`, `.claude`, `.antigravity`) |
+| 1.0.0 | 2026-06-25 | Initial release |
+| | | - Windsurf → Devin migration with automatic detection |
+| | | - Modular command structure (`lib/commands/`) |
+| | | - Bug fixes for ora compatibility and path resolution |
 
 ---
 
