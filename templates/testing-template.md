@@ -1,12 +1,26 @@
-# Testing Scenarios: <Feature><num>
+# Testing Scenarios: <Feature> - <StoryTitle>
 
 ## Document Information
 - **Document Version**: 1.0
 - **Created Date**: [YYYY-MM-DD]
 - **Last Updated**: [YYYY-MM-DD]
 - **Author**: [Author Name]
-- **Feature**: [Feature Name]
-- **User Acceptance**: [User Acceptance Number]
+- **Feature**: <Feature>
+- **User Story**: <StoryId> - <StoryTitle>
+
+---
+
+## User Story
+
+**As a** <AsA>
+**I want** <IWant>
+**So that** <SoThat>
+
+---
+
+## Acceptance Criteria
+
+<AcceptanceCriteria>
 
 ---
 

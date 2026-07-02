@@ -1,29 +1,26 @@
-# Production Requirements: <Feature><num>
+# Production Requirements: <Feature> - <StoryTitle>
 
 ## Document Information
 - **Document Version**: 1.0
 - **Created Date**: [YYYY-MM-DD]
 - **Last Updated**: [YYYY-MM-DD]
 - **Author**: [Author Name]
-- **Feature**: [Feature Name]
-- **User Acceptance**: [User Acceptance Number]
+- **Feature**: <Feature>
+- **User Story**: <StoryId> - <StoryTitle>
 
 ---
 
-## User Acceptance Criteria
+## User Story
 
-### FR01: [Acceptance criteria 1]
-- [ ] [Sub-criteria 1]
-- [ ] [Sub-criteria 2]
-- [ ] [Sub-criteria 3]
+**As a** <AsA>
+**I want** <IWant>
+**So that** <SoThat>
 
-### FR02: [Acceptance criteria 2]
-- [ ] [Sub-criteria 1]
-- [ ] [Sub-criteria 2]
+---
 
-### FR03: [Acceptance criteria 3]
-- [ ] [Sub-criteria 1]
-- [ ] [Sub-criteria 2]
+## Acceptance Criteria
+
+<AcceptanceCriteria>
 
 ---
 
@@ -50,7 +47,7 @@ Explain:
 
 ## User Persona
 
-**Primary User:** [User type]
+**Primary User:** <AsA>
 - **Goals:** [What the user wants to achieve]
 - **Pain Points:** [Current problems this solves]
 - **Context:** [When/where this is used]

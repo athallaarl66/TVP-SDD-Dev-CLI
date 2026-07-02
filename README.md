@@ -14,7 +14,7 @@
 ---
 
 **authored by** · `Talapvnk`  
-**version** · `1.1.1`  
+**version** · `1.2.0`  
 **license** · `unlicensed — all rights reserved`  
 **status** · `maintained`
 
@@ -122,10 +122,10 @@ sdd-gen /qa-report user-authentication
 | `/feature-design <feature>` | generate feature-level design documentation | `docs/features/{feature}-design.md` |
 | `/init <feature>` | generate all docs at once to docs/ folder | PRD + TECH + SPEC_TEST + REPORT |
 | `/prd <feature>` | generate Product Requirements Document to docs/ | `docs/features/{feature}-prd.md` |
-| `/breakdown-task <prd-file> [feature]` | parse PRD, generate scenario-level docs to docs/ | `docs/production/{feature}/` |
+| `/breakdown-task <prd-file> [feature]` | parse PRD, generate scenario-level docs to docs/ | `docs/production/{feature}/` (slug-based naming) |
 | `/technical <feature>` | generate Technical Design document to docs/ | `docs/features/{feature}-technical.md` |
 | `/spec-test <feature>` | generate Playwright E2E test spec to docs/ | `docs/test-reports/{feature}/{feature}-spec-test.md` |
-| `/implement-code <feature> <num>` | generate skill.md to docs/ | `docs/production/{feature}/{feature}<num>-skill.md` |
+| `/implement-code <feature> <slug>` | generate skill.md to docs/ | `docs/production/{feature}/{feature}-{slug}-skill.md` |
 | `/qa-test-script <feature>` | generate Playwright test script to tests/ | `tests/{feature}.spec.js` |
 | `/qa-test-run <feature>` | run Playwright test, update package.json | `qa-run:{feature}` script |
 | `/qa-report <feature>` | generate QA Report document to docs/ | `docs/test-reports/{feature}/{feature}-qa-report.md` |
@@ -192,11 +192,11 @@ your-project/
 │   │   └── {feature}-design.md
 │   ├── production/
 │   │   └── [feature]/
-│   │       ├── [feature]01-prod.md
-│   │       ├── [feature]01-tech.md
-│   │       ├── [feature]01-design.md
-│   │       ├── [feature]01-testing.md
-│   │       └── [feature]01-skill.md
+│   │       ├── [feature]-[story-slug]-prod.md
+│   │       ├── [feature]-[story-slug]-tech.md
+│   │       ├── [feature]-[story-slug]-design.md
+│   │       ├── [feature]-[story-slug]-testing.md
+│   │       └── [feature]-[story-slug]-skill.md
 │   └── test-reports/
 │       └── [feature]/
 │           ├── [feature]-spec-test.md
@@ -236,6 +236,15 @@ TVP-sdd-cli/
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2.0 | 2026-07-02 | Improve breakdown task with slug-based naming and story extraction |
+| | | - Enhanced parseUserStories() to extract title, As a, I want, So that, acceptance criteria |
+| | | - Generate meaningful slugs from user story titles for file naming |
+| | | - Breakdown files now use slug-based naming: {feature}-{story-slug}-{type}.md |
+| | | - Templates inject story-specific content (title, As a, I want, So that, acceptance criteria) |
+| | | - Added validation for PRD format before breakdown |
+| | | - Added story → file mapping summary after breakdown |
+| | | - Updated /implement-code to use slug instead of num |
+| | | - Support both PRD formats (with and without title in header) |
 | 1.1.1 | 2026-06-25 | Update features folder to flat structure |
 | | | - Changed features folder from nested to flat structure |
 | | | - /prd outputs to docs/features/{feature}-prd.md (flat) |
