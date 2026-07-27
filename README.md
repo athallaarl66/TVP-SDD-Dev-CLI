@@ -14,7 +14,7 @@
 ---
 
 **authored by** · `Talapvnk`  
-**version** · `1.2.0`  
+**version** · `1.3.0`  
 **license** · `unlicensed — all rights reserved`  
 **status** · `maintained`
 
@@ -102,10 +102,11 @@ sdd-gen /feature-design user-authentication
 # 8. generate skill.md and trigger implementation
 sdd-gen /implement-code user-authentication 01
 
-# 9. generate & run playwright tests
+# 9. generate & run tests (Playwright or Unit Tests)
 sdd-gen /qa-test-script user-authentication
-sdd-gen /qa-test-run user-authentication
-npm run qa-run:user-authentication
+# → choose: Playwright (E2E) or Unit Test (Jest, PHPUnit, xUnit, NUnit, JUnit, pytest)
+sdd-gen /qa-test-run user-authentication  # for Playwright only
+npm run qa-run:user-authentication        # for Playwright only
 
 # 10. generate QA report
 sdd-gen /qa-report user-authentication
@@ -126,9 +127,25 @@ sdd-gen /qa-report user-authentication
 | `/technical <feature>` | generate Technical Design document to docs/ | `docs/features/{feature}-technical.md` |
 | `/spec-test <feature>` | generate Playwright E2E test spec to docs/ | `docs/test-reports/{feature}/{feature}-spec-test.md` |
 | `/implement-code <feature> <slug>` | generate skill.md to docs/ | `docs/production/{feature}/{feature}-{slug}-skill.md` |
-| `/qa-test-script <feature>` | generate Playwright test script to tests/ | `tests/{feature}.spec.js` |
+| `/qa-test-script <feature>` | generate test script (Playwright or Unit) to tests/ | `tests/{feature}.spec.ts` or `tests/{feature}.test.ts` |
 | `/qa-test-run <feature>` | run Playwright test, update package.json | `qa-run:{feature}` script |
 | `/qa-report <feature>` | generate QA Report document to docs/ | `docs/test-reports/{feature}/{feature}-qa-report.md` |
+
+---
+
+## supported test frameworks
+
+| Framework | Extension | Convention | Run Command |
+|-----------|-----------|------------|-------------|
+| Playwright (E2E) | `.spec.ts` | `tests/<feature>.spec.ts` | `npm run qa-run:<feature>` |
+| Jest (JS/TS/JSX/TSX) | `.test.ts` | `tests/<feature>.test.ts` | `npx jest <feature>` |
+| PHPUnit (Laravel) | `Test.php` | `tests/Feature/<Feature>Test.php` | `php artisan test --filter=<feature>` |
+| xUnit (.NET) | `Tests.cs` | `tests/<Feature>Tests.cs` | `dotnet test --filter <feature>` |
+| NUnit (.NET) | `Tests.cs` | `tests/<Feature>Tests.cs` | `dotnet test --filter <feature>` |
+| JUnit 5 (Java) | `Test.java` | `tests/src/test/java/<Feature>Test.java` | `mvn test -Dtest=<feature>Test` |
+| pytest (Python) | `_test.py` | `tests/test_<feature>.py` | `pytest tests/test_<feature>.py` |
+
+> `/qa-test-script` auto-detects your project type and prompts for framework selection.
 
 ---
 
@@ -146,9 +163,13 @@ sdd-gen /qa-report user-authentication
 - `sdd-implement-code` — Generate skill.md with role prompts, trigger implementation
 
 ### cluster 4 — the QA engine
-- `sdd-qa-test-script` — generate Playwright test script
+- `sdd-qa-test-script` — generate test script (Playwright or Unit Tests)
 - `sdd-qa-test-run` — run Playwright test (auto-install)
 - `sdd-qa-report` — generate QA Report
+
+### cluster 5 — the designers
+- `sdd-design-system` — generate global Design System documentation
+- `sdd-feature-design` — generate feature-level design documentation
 
 > all skills & workflows available for Devin Cascade, Claude, OpenCode, and Antigravity.
 
@@ -160,11 +181,7 @@ sdd-gen /qa-report user-authentication
 
 ```
 docs/DESIGN.md
-docs/[feature]-DESIGN.md
-.devin/skills/[feature]-DESIGN.md
-.opencode/skills/[feature]-DESIGN.md
-.claude/skills/[feature]-DESIGN.md
-.antigravity/skills/[feature]-DESIGN.md
+docs/features/[feature]-design.md
 ```
 
 > DESIGN.md is optional. Features can be implemented using breakdown files (prod, tech) without visual design documents.
@@ -202,7 +219,12 @@ your-project/
 │           ├── [feature]-spec-test.md
 │           └── [feature]-qa-report.md
 ├── tests/
-│   └── [feature].spec.js
+│   ├── [feature].spec.ts       # Playwright E2E
+│   ├── [feature].test.ts       # Jest (JS/TS)
+│   ├── Feature/[feature]Test.php  # PHPUnit (Laravel)
+│   ├── [feature]Tests.cs       # xUnit/NUnit (.NET)
+│   ├── src/test/java/[feature]Test.java  # JUnit (Java)
+│   └── test_[feature].py       # pytest (Python)
 └── package.json
 ```
 
@@ -221,6 +243,8 @@ TVP-sdd-cli/
 │   ├── design-template.md
 │   ├── tech-template.md
 │   ├── technical-template.md
+│   ├── design-system-template.md
+│   ├── feature-design-template.md
 │   ├── spec-test-template.md
 │   └── qa-report-template.md
 ├── skill-templates/
@@ -236,6 +260,15 @@ TVP-sdd-cli/
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3.0 | 2026-07-27 | Multi-framework test support and TypeScript migration |
+| | | - Migrated QA test script output from `.spec.js` to `.spec.ts` |
+| | | - Added multi-framework unit test support (Jest, PHPUnit, xUnit, NUnit, JUnit, pytest) |
+| | | - Auto-detects project type and prompts for framework selection |
+| | | - Added `/design-system` and `/feature-design` skill templates |
+| | | - Fixed skill templates to reference `docs/` instead of AI tool workflows |
+| | | - Updated all test references from `.spec.js` to `.spec.ts` |
+| | | - Cleanup: removed stray files from `.devin/skills/` |
+| | | - Standardized all paths to `docs/` directory |
 | 1.2.0 | 2026-07-02 | Improve breakdown task with slug-based naming and story extraction |
 | | | - Enhanced parseUserStories() to extract title, As a, I want, So that, acceptance criteria |
 | | | - Generate meaningful slugs from user story titles for file naming |
@@ -276,7 +309,7 @@ npm link
 CLI will prompt you to create a folder. pick one: `.devin` `.opencode` `.claude` `.antigravity`
 
 **DESIGN.md not found**  
-DESIGN.md is optional. If not found, implementation will proceed using breakdown files only. Check the lookup order above if you want to include visual tokens.
+DESIGN.md is optional. If not found, implementation will proceed using breakdown files only.
 
 **breakdown files not found**  
 Run `sdd-gen /breakdown-task <prd-file> <feature>` first to generate scenario-level documentation.

@@ -49,7 +49,7 @@ The skill performs the following:
 ## Prerequisites
 
 Before using this skill, ensure:
-- Test script exists in `tests/<featureName>.spec.js`
+- Test script exists in `tests/<featureName>.spec.ts`
 - package.json exists in the project root
 - Node.js and npm are installed
 
@@ -57,7 +57,7 @@ Before using this skill, ensure:
 
 After the setup is complete, you can:
 1. Run tests using: `npm run qa-run:<featureName>`
-2. Or run directly: `npx playwright test tests/<featureName>.spec.js`
+2. Or run directly: `npx playwright test tests/<featureName>.spec.ts`
 3. View test results in the terminal
 4. Check test reports in the test-results/ directory
 
