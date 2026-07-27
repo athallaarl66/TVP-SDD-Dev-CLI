@@ -179,6 +179,163 @@
 
 ---
 
+## Playwright E2E Test Specification
+
+### Browser Configuration
+
+| Browser | Viewport | Headless | Use |
+|---------|----------|----------|-----|
+| Chromium | 1920x1080 | Yes | Primary |
+| Firefox | 1920x1080 | Yes | Secondary |
+| WebKit | 1920x1080 | Yes | Secondary |
+
+### Page Object Model
+
+```javascript
+// tests/pages/[pageName].page.js
+class [PageName]Page {
+  constructor(page) {
+    this.page = page;
+    this.title = page.locator('h1');
+    this.submitButton = page.locator('button[type="submit"]');
+  }
+
+  async navigate() {
+    await this.page.goto('/[path]');
+  }
+
+  async submit() {
+    await this.submitButton.click();
+  }
+}
+module.exports = [PageName]Page;
+```
+
+### E2E Test Cases
+
+#### TC-E001: [User Flow Test Name]
+**Preconditions:**
+- User is logged in
+- Test data is available
+
+**Test Steps:**
+| Step | Action | Playwright Code | Expected Result |
+|------|--------|-----------------|----------------|
+| 1 | Navigate to page | `await page.goto('/path')` | Page loads |
+| 2 | Click element | `await page.locator('selector').click()` | Element clicked |
+| 3 | Verify visible | `await expect(page.locator('selector')).toBeVisible()` | Element visible |
+
+**Playwright Code:**
+```typescript
+test('[Test Name]', async ({ page }) => {
+  await page.goto('/path');
+  await page.locator('selector').click();
+  await expect(page.locator('target')).toBeVisible();
+});
+```
+
+**Priority:** Critical
+
+---
+
+#### TC-E002: [Form Validation Test]
+**Test Scenarios:**
+| Scenario | Input | Expected Behavior |
+|----------|-------|-------------------|
+| Valid input | [Valid data] | Form submits |
+| Required field empty | [Empty] | Error shown |
+| Invalid format | [Invalid] | Validation error |
+
+**Playwright Code:**
+```typescript
+test('[Form Validation]', async ({ page }) => {
+  await page.goto('/form');
+  await page.locator('button[type="submit"]').click();
+  await expect(page.locator('.error')).toContainText('required');
+});
+```
+
+**Priority:** High
+
+---
+
+### Responsive Design Tests
+
+| Device | Viewport | Expected Behavior |
+|--------|----------|-------------------|
+| Desktop | 1920x1080 | Full layout |
+| Tablet | 768x1024 | Adapted layout |
+| Mobile | 375x667 | Mobile layout |
+
+```typescript
+test('[Responsive Test]', async ({ page }) => {
+  await page.goto('/page');
+  await page.setViewportSize({ width: 375, height: 667 });
+  await expect(page.locator('.mobile-menu')).toBeVisible();
+});
+```
+
+---
+
+### Accessibility Tests
+
+| Check | Selector | Expected |
+|-------|----------|----------|
+| Alt text | `img` | Has alt attribute |
+| ARIA labels | `[role="button"]` | Has aria-label |
+| Keyboard nav | `input, button` | Focusable |
+
+```typescript
+test('[Accessibility Test]', async ({ page }) => {
+  await page.goto('/page');
+  const images = await page.locator('img').all();
+  for (const img of images) {
+    await expect(img).toHaveAttribute('alt');
+  }
+});
+```
+
+---
+
+### Performance Metrics
+
+| Metric | Target |
+|--------|--------|
+| Page Load Time | < 2s |
+| Time to Interactive | < 3s |
+| First Contentful Paint | < 1s |
+
+```typescript
+test('[Performance Test]', async ({ page }) => {
+  const startTime = Date.now();
+  await page.goto('/page');
+  const loadTime = Date.now() - startTime;
+  expect(loadTime).toBeLessThan(2000);
+});
+```
+
+---
+
+### Test Configuration
+
+```typescript
+// playwright.config.ts
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests',
+  timeout: 30000,
+  retries: 2,
+  use: {
+    baseURL: '[BASE_URL]',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+  },
+});
+```
+
+---
+
 ## Automation Notes
 
 - **Automatable:** [Yes/No]

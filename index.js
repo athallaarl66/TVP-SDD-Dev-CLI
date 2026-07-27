@@ -8,8 +8,6 @@ const program = new Command();
 const { registerPrdCommand } = require('./lib/commands/prd');
 const { registerBreakdownCommand } = require('./lib/commands/breakdown');
 const { registerTechnicalCommand } = require('./lib/commands/technical');
-const { registerSpecTestCommand } = require('./lib/commands/spec-test');
-const { registerImplementCodeCommand } = require('./lib/commands/implement-code');
 const { registerQATestScriptCommand } = require('./lib/commands/qa-test-script');
 const { registerQATestRunCommand } = require('./lib/commands/qa-test-run');
 const { registerQAReportCommand } = require('./lib/commands/qa-report');
@@ -22,8 +20,6 @@ const { registerFeatureDesignCommand } = require('./lib/commands/feature-design'
 registerPrdCommand(program);
 registerBreakdownCommand(program);
 registerTechnicalCommand(program);
-registerSpecTestCommand(program);
-registerImplementCodeCommand(program);
 registerQATestScriptCommand(program);
 registerQATestRunCommand(program);
 registerQAReportCommand(program);

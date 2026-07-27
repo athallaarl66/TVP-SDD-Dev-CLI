@@ -23,7 +23,7 @@
 ## what is this
 
 CLI tool to make development documentation faster and easier.
-Generates PRD, Technical Design, Spec Test, and QA Report automatically.
+Generates PRD, Technical Design, and QA Report automatically.
 Breaks down PRD into scenario-level documentation for granular implementation.
 Integrated with Playwright for E2E testing.
 Works with AI tool folders: `.devin` `.opencode` `.claude` `.antigravity`
@@ -65,7 +65,6 @@ sdd-gen /design-system
 sdd-gen /prd <feature-name>
 sdd-gen /technical <feature-name>
 sdd-gen /feature-design <feature-name>
-sdd-gen /spec-test <feature-name>
 
 # Or generate all at once
 sdd-gen /init <feature-name>
@@ -99,16 +98,13 @@ sdd-gen /breakdown-task docs/features/user-authentication-prd.md user-authentica
 # 7. generate feature-level design
 sdd-gen /feature-design user-authentication
 
-# 8. generate skill.md and trigger implementation
-sdd-gen /implement-code user-authentication 01
-
-# 9. generate & run tests (Playwright or Unit Tests)
+# 8. generate & run tests (Playwright or Unit Tests)
 sdd-gen /qa-test-script user-authentication
 # → choose: Playwright (E2E) or Unit Test (Jest, PHPUnit, xUnit, NUnit, JUnit, pytest)
 sdd-gen /qa-test-run user-authentication  # for Playwright only
 npm run qa-run:user-authentication        # for Playwright only
 
-# 10. generate QA report
+# 9. generate QA report
 sdd-gen /qa-report user-authentication
 ```
 
@@ -121,12 +117,10 @@ sdd-gen /qa-report user-authentication
 | `/install-all-skills` | install skills & workflows to AI tool folders (for AI tools) | `.devin/skills/` `.devin/workflows/` etc. |
 | `/design-system` | generate global Design System documentation | `docs/DESIGN.md` |
 | `/feature-design <feature>` | generate feature-level design documentation | `docs/features/{feature}-design.md` |
-| `/init <feature>` | generate all docs at once to docs/ folder | PRD + TECH + SPEC_TEST + REPORT |
+| `/init <feature>` | generate all docs at once to docs/ folder | PRD + TECH + FEATURE_DESIGN |
 | `/prd <feature>` | generate Product Requirements Document to docs/ | `docs/features/{feature}-prd.md` |
 | `/breakdown-task <prd-file> [feature]` | parse PRD, generate scenario-level docs to docs/ | `docs/production/{feature}/` (slug-based naming) |
 | `/technical <feature>` | generate Technical Design document to docs/ | `docs/features/{feature}-technical.md` |
-| `/spec-test <feature>` | generate Playwright E2E test spec to docs/ | `docs/test-reports/{feature}/{feature}-spec-test.md` |
-| `/implement-code <feature> <slug>` | generate skill.md to docs/ | `docs/production/{feature}/{feature}-{slug}-skill.md` |
 | `/qa-test-script <feature>` | generate test script (Playwright or Unit) to tests/ | `tests/{feature}.spec.ts` or `tests/{feature}.test.ts` |
 | `/qa-test-run <feature>` | run Playwright test, update package.json | `qa-run:{feature}` script |
 | `/qa-report <feature>` | generate QA Report document to docs/ | `docs/test-reports/{feature}/{feature}-qa-report.md` |
@@ -154,37 +148,20 @@ sdd-gen /qa-report user-authentication
 ### cluster 1 — the specs maker
 - `sdd-prd` — Product Requirements Document
 - `sdd-technical` — Technical Design Document
-- `sdd-spec-test` — Playwright E2E Test Spec
 
 ### cluster 2 — the breakdown preparator
 - `sdd-breakdown-task` — Parse PRD, generate scenario-level docs
 
-### cluster 3 — the code preparator
-- `sdd-implement-code` — Generate skill.md with role prompts, trigger implementation
-
-### cluster 4 — the QA engine
+### cluster 3 — the QA engine
 - `sdd-qa-test-script` — generate test script (Playwright or Unit Tests)
 - `sdd-qa-test-run` — run Playwright test (auto-install)
 - `sdd-qa-report` — generate QA Report
 
-### cluster 5 — the designers
+### cluster 4 — the designers
 - `sdd-design-system` — generate global Design System documentation
 - `sdd-feature-design` — generate feature-level design documentation
 
 > all skills & workflows available for Devin Cascade, Claude, OpenCode, and Antigravity.
-
----
-
-## DESIGN.md lookup order (optional)
-
-`/implement-code` optionally searches for DESIGN.md in this order for visual tokens:
-
-```
-docs/DESIGN.md
-docs/features/[feature]-design.md
-```
-
-> DESIGN.md is optional. Features can be implemented using breakdown files (prod, tech) without visual design documents.
 
 ---
 
@@ -212,11 +189,9 @@ your-project/
 │   │       ├── [feature]-[story-slug]-prod.md
 │   │       ├── [feature]-[story-slug]-tech.md
 │   │       ├── [feature]-[story-slug]-design.md
-│   │       ├── [feature]-[story-slug]-testing.md
-│   │       └── [feature]-[story-slug]-skill.md
+│   │       └── [feature]-[story-slug]-testing.md
 │   └── test-reports/
 │       └── [feature]/
-│           ├── [feature]-spec-test.md
 │           └── [feature]-qa-report.md
 ├── tests/
 │   ├── [feature].spec.ts       # Playwright E2E
@@ -245,7 +220,6 @@ TVP-sdd-cli/
 │   ├── technical-template.md
 │   ├── design-system-template.md
 │   ├── feature-design-template.md
-│   ├── spec-test-template.md
 │   └── qa-report-template.md
 ├── skill-templates/
 │   └── sdd-*/
