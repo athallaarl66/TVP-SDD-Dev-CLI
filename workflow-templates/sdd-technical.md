@@ -49,6 +49,5 @@ After the Technical Design is generated, you should:
 ## Next Steps
 
 After completing the Technical Design document:
-1. Generate Spec Test: `sdd-gen /spec-test <featureName>`
+1. Generate QA test script: `sdd-gen /qa-test-script <featureName>`
 2. Create DESIGN.md for visual specifications
-3. Generate implementation prompt: `sdd-gen /implement-code <featureName>`

@@ -118,4 +118,3 @@ The workflow will handle these error cases:
 - If featureName is provided, only that feature's user stories are processed
 - If featureName is omitted, all user stories are processed and grouped by feature
 - This is the second step in the documentation workflow after PRD generation
-- The generated breakdown files are used by `/implement-code` command
