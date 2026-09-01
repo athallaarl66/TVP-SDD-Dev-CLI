@@ -14,8 +14,8 @@
 ---
 
 **authored by** · `Talapvnk`  
-**version** · `1.3.0`  
-**license** · `unlicensed — all rights reserved`  
+**version** · `1.3.5`  
+**license** · `MIT`  
 **status** · `maintained`
 
 ---
@@ -35,7 +35,7 @@ Includes Design System and Feature Design documentation.
 
 ```bash
 git clone <repository-url>
-cd TVP-sdd-cli
+cd TVP-SDD-Dev-CLI
 npm install
 npm link
 
@@ -208,7 +208,7 @@ your-project/
 ## cli source structure
 
 ```
-TVP-sdd-cli/
+TVP-SDD-Dev-CLI/
 ├── index.js
 ├── package.json
 ├── templates/
