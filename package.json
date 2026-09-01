@@ -1,6 +1,6 @@
 {
   "name": "sdd-dev-cli",
-  "version": "1.3.0",
+  "version": "1.3.5",
   "description": "Global CLI tool for Software Development Documentation workflow",
   "main": "index.js",
   "bin": {
