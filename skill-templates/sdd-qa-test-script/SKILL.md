@@ -1,6 +1,6 @@
 ---
 name: sdd-qa-test-script
-description: Generate test script (Playwright or Unit) from SPEC_TEST document with multi-framework support. Auto-detects project type and supports Jest, PHPUnit, xUnit, NUnit, JUnit, pytest.
+description: Generate test script (Playwright or Unit) from SPEC_TEST document with multi-framework support. Auto-detects project type and supports Jest, PHPUnit, xUnit, NUnit, JUnit, pytest, Go testing.
 license: MIT
 compatibility: Requires TVP-SDD-Dev CLI.
 metadata:
@@ -15,7 +15,7 @@ Generate test script from SPEC_TEST document using the TVP-SDD-Dev CLI.
 
 When invoked, this skill will:
 1. Run the command: `sdd-gen /qa-test-script <featureName>`
-2. Auto-detect project type (PHP, .NET, Java, Python, JS/TS)
+2. Auto-detect project type (PHP, .NET, Java, Python, Go, JS/TS)
 3. Prompt to choose test type and framework
 4. Read SPEC_TEST.md from `docs/test-reports/{featureName}/`
 5. Generate the selected test type with basic structure
@@ -32,6 +32,7 @@ When invoked, this skill will:
 | NUnit (.NET) | `Tests.cs` | `tests/<Feature>Tests.cs` |
 | JUnit 5 (Java) | `Test.java` | `tests/src/test/java/<Feature>Test.java` |
 | pytest (Python) | `_test.py` | `tests/test_<feature>.py` |
+| Go testing | `_test.go` | `tests/<feature>_test.go` |
 
 ## When to Use
 

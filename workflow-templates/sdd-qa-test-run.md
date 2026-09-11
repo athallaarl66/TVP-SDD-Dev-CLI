@@ -1,20 +1,20 @@
 ---
 name: "SDD: QA Test Run"
-description: "Execute Playwright test and add script to package.json. Auto-installs @playwright/test and Playwright browsers if not present, then adds qa-run:[featureName] script to package.json and provides execution command for running the tests."
+description: "Run generated tests for a feature across all supported frameworks (Playwright, Jest, PHPUnit, xUnit, NUnit, JUnit, pytest, Go testing). Auto-detects framework from the generated test file, installs dependencies when needed, and executes the correct test command."
 category: Workflow
-tags: [workflow, testing, playwright, execution, automation]
+tags: [workflow, testing, playwright, jest, phpunit, xunit, nunit, junit, pytest, gotest, execution, automation]
 ---
 
-Execute Playwright test and add script to package.json using the TVP-SDD-Dev CLI.
+Run generated tests and add run script using the TVP-SDD-Dev CLI.
 
 ## What This Workflow Does
 
 When invoked, this workflow will:
 1. Run the command: `sdd-gen /qa-test-run <featureName>`
-2. Auto-install @playwright/test if not present in the project
-3. Auto-install Playwright browsers if not present
-4. Add `qa-run:<featureName>` script to package.json
-5. Provide the execution command: `npm run qa-run:<featureName>`
+2. Auto-detect framework from the generated test file in `tests/` directory
+3. Auto-install dependencies if required (Playwright, Jest)
+4. Add `qa-run:<featureName>` script to package.json (Node frameworks only)
+5. Execute the correct test command for the detected framework
 
 ## Input
 
@@ -23,29 +23,32 @@ Provide the feature name as input:
 Feature name: user-authentication
 ```
 
-## What Gets Done
+## Supported Frameworks
 
-The workflow performs the following:
-- Checks for @playwright/test in package.json
-- Installs @playwright/test if not present
-- Installs Playwright browsers if not present
-- Adds test script to package.json scripts section
-- Provides command to run the tests
+| Framework | Test File | Run Command |
+|-----------|-----------|-------------|
+| Playwright (E2E) | `tests/<feature>.spec.ts` | `npx playwright test tests/<feature>.spec.ts` |
+| Jest (JS/TS) | `tests/<feature>.test.ts` | `npx jest tests/<feature>.test.ts` |
+| PHPUnit (Laravel) | `tests/Feature/<Feature>Test.php` | `php artisan test --filter=<feature>` |
+| xUnit / NUnit (.NET) | `tests/<Feature>Tests.cs` | `dotnet test --filter <feature>` |
+| JUnit 5 (Java) | `tests/src/test/java/<Feature>Test.java` | `mvn test -Dtest=<Feature>Test` |
+| pytest (Python) | `tests/test_<feature>.py` | `python -m pytest tests/test_<feature>.py` |
+| Go testing | `tests/<feature>_test.go` | `go test -v ./tests/...` |
 
 ## Prerequisites
 
 Before using this workflow, ensure:
-- Test script exists in `tests/<featureName>.spec.ts`
-- package.json exists in the project root
-- Node.js and npm are installed
+- A test file was generated via `sdd-gen /qa-test-script <featureName>`
+- The project's runtime is available (Node.js, PHP, .NET SDK, JDK, Python, or Go)
+- package.json exists if using Playwright or Jest
 
-## After Setup
+## What Gets Done
 
-After the setup is complete, you can:
-1. Run tests using: `npm run qa-run:<featureName>`
-2. Or run directly: `npx playwright test tests/<featureName>.spec.ts`
-3. View test results in the terminal
-4. Check test reports in the test-results/ directory
+The workflow performs the following:
+- Detects the framework from the generated test file
+- Installs Node dependencies if required (Playwright, Jest)
+- Adds a `qa-run:<featureName>` script to package.json scripts section for Node frameworks
+- Runs the correct test command and shows output
 
 ## Next Steps
 

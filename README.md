@@ -13,10 +13,10 @@
 
 ---
 
-**authored by** · `Talapvnk`  
-**version** · `1.3.5`  
+**version** · `1.3.6`  
 **license** · `MIT`  
-**status** · `maintained`
+**status** · `maintained`  
+**last updated** · `2026-09-11`
 
 ---
 
@@ -85,13 +85,13 @@ cd /path/to/project
 # 2. generate global design system (first time setup)
 sdd-gen /design-system
 
-# 3. generate PRD for a feature
+# 3. generate PRD for a feature (template auto-filled with feature name & date)
 sdd-gen /prd user-authentication
 
 # 4. fill in the PRD with user stories
 
 # 5. breakdown PRD into scenario-level docs
-sdd-gen /breakdown-task docs/features/user-authentication-prd.md user-authentication
+sdd-gen /sdd-breakdown-task docs/features/user-authentication-prd.md user-authentication
 
 # 6. fill in the breakdown files (prod, tech, design, testing)
 
@@ -100,9 +100,9 @@ sdd-gen /feature-design user-authentication
 
 # 8. generate & run tests (Playwright or Unit Tests)
 sdd-gen /qa-test-script user-authentication
-# → choose: Playwright (E2E) or Unit Test (Jest, PHPUnit, xUnit, NUnit, JUnit, pytest)
-sdd-gen /qa-test-run user-authentication  # for Playwright only
-npm run qa-run:user-authentication        # for Playwright only
+# → choose: Playwright (E2E) or Unit Test (Jest, PHPUnit, xUnit, NUnit, JUnit, pytest, Go)
+sdd-gen /qa-test-run user-authentication   # runs detected framework's test command
+npm run qa-run:user-authentication         # for Node-based frameworks (Playwright, Jest)
 
 # 9. generate QA report
 sdd-gen /qa-report user-authentication
@@ -119,10 +119,10 @@ sdd-gen /qa-report user-authentication
 | `/feature-design <feature>` | generate feature-level design documentation | `docs/features/{feature}-design.md` |
 | `/init <feature>` | generate all docs at once to docs/ folder | PRD + TECH + FEATURE_DESIGN |
 | `/prd <feature>` | generate Product Requirements Document to docs/ | `docs/features/{feature}-prd.md` |
-| `/breakdown-task <prd-file> [feature]` | parse PRD, generate scenario-level docs to docs/ | `docs/production/{feature}/` (slug-based naming) |
+| `/sdd-breakdown-task <prd-file> [feature]` | parse PRD, generate scenario-level docs to docs/ | `docs/production/{feature}/` (numbered per PRD order) |
 | `/technical <feature>` | generate Technical Design document to docs/ | `docs/features/{feature}-technical.md` |
 | `/qa-test-script <feature>` | generate test script (Playwright or Unit) to tests/ | `tests/{feature}.spec.ts` or `tests/{feature}.test.ts` |
-| `/qa-test-run <feature>` | run Playwright test, update package.json | `qa-run:{feature}` script |
+| `/qa-test-run <feature>` | detect framework from generated test file and run it | run output |
 | `/qa-report <feature>` | generate QA Report document to docs/ | `docs/test-reports/{feature}/{feature}-qa-report.md` |
 
 ---
@@ -138,8 +138,10 @@ sdd-gen /qa-report user-authentication
 | NUnit (.NET) | `Tests.cs` | `tests/<Feature>Tests.cs` | `dotnet test --filter <feature>` |
 | JUnit 5 (Java) | `Test.java` | `tests/src/test/java/<Feature>Test.java` | `mvn test -Dtest=<feature>Test` |
 | pytest (Python) | `_test.py` | `tests/test_<feature>.py` | `pytest tests/test_<feature>.py` |
+| Go testing | `_test.go` | `tests/<feature>_test.go` | `go test -v ./tests/...` |
 
 > `/qa-test-script` auto-detects your project type and prompts for framework selection.
+> `/qa-test-run` auto-detects the framework from the generated test file and runs the correct command.
 
 ---
 
@@ -154,7 +156,7 @@ sdd-gen /qa-report user-authentication
 
 ### cluster 3 — the QA engine
 - `sdd-qa-test-script` — generate test script (Playwright or Unit Tests)
-- `sdd-qa-test-run` — run Playwright test (auto-install)
+- `sdd-qa-test-run` — run generated test (framework auto-detected)
 - `sdd-qa-report` — generate QA Report
 
 ### cluster 4 — the designers
@@ -186,10 +188,10 @@ your-project/
 │   │   └── {feature}-design.md
 │   ├── production/
 │   │   └── [feature]/
-│   │       ├── [feature]-[story-slug]-prod.md
-│   │       ├── [feature]-[story-slug]-tech.md
-│   │       ├── [feature]-[story-slug]-design.md
-│   │       └── [feature]-[story-slug]-testing.md
+│   │       ├── [feature]-[no]-[story-slug]-prod.md
+│   │       ├── [feature]-[no]-[story-slug]-tech.md
+│   │       ├── [feature]-[no]-[story-slug]-design.md
+│   │       └── [feature]-[no]-[story-slug]-testing.md
 │   └── test-reports/
 │       └── [feature]/
 │           └── [feature]-qa-report.md
@@ -200,6 +202,7 @@ your-project/
 │   ├── [feature]Tests.cs       # xUnit/NUnit (.NET)
 │   ├── src/test/java/[feature]Test.java  # JUnit (Java)
 │   └── test_[feature].py       # pytest (Python)
+│   └── [feature]_test.go       # Go testing
 └── package.json
 ```
 
@@ -286,7 +289,7 @@ CLI will prompt you to create a folder. pick one: `.devin` `.opencode` `.claude`
 DESIGN.md is optional. If not found, implementation will proceed using breakdown files only.
 
 **breakdown files not found**  
-Run `sdd-gen /breakdown-task <prd-file> <feature>` first to generate scenario-level documentation.
+Run `sdd-gen /sdd-breakdown-task <prd-file> <feature>` first to generate scenario-level documentation.
 
 **permission denied**
 ```bash

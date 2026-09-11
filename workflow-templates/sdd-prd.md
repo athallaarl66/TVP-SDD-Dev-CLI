@@ -11,8 +11,8 @@ Generate Product Requirements Document (PRD) for a feature using the TVP-SDD-Dev
 
 When invoked, this workflow will:
 1. Run the command: `sdd-gen /prd <featureName>`
-2. Generate a PRD document template in `docs/features/{featureName}/prd.md`
-3. The document will also be copied to AI tool folders (.devin, .opencode, .claude, .antigravity) if they exist
+2. Generate a PRD document template at `docs/features/{featureName}-prd.md`
+3. Pre-fill the template with the feature name, project name (from package.json), and current date
 
 ## Input
 
@@ -47,7 +47,7 @@ After the PRD is generated, you should:
 ## Next Steps
 
 After completing the PRD document:
-1. Breakdown PRD into scenario-level docs: `sdd-gen /breakdown-task <prd-file> <featureName>`
+1. Breakdown PRD into scenario-level docs: `sdd-gen /sdd-breakdown-task <prd-file> <featureName>`
 2. Generate Technical Design: `sdd-gen /technical <featureName>`
 3. Generate Spec Test: `sdd-gen /spec-test <featureName>`
 4. Create DESIGN.md for visual specifications (optional)

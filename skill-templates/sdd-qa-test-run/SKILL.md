@@ -1,6 +1,6 @@
 ---
 name: sdd-qa-test-run
-description: Execute Playwright test and add script to package.json. Auto-installs @playwright/test and Playwright browsers if not present, then adds qa-run:[featureName] script to package.json and provides execution command for running the tests.
+description: Run generated tests for a feature across all supported frameworks (Playwright, Jest, PHPUnit, xUnit, NUnit, JUnit, pytest, Go testing). Auto-detects the framework from the generated test file, installs dependencies when needed, and executes the correct test command.
 license: MIT
 compatibility: Requires TVP-SDD-Dev CLI.
 metadata:
@@ -9,24 +9,36 @@ metadata:
   generatedBy: "1.0"
 ---
 
-Execute Playwright test and add script to package.json using the TVP-SDD-Dev CLI.
+Run generated tests and add run script using the TVP-SDD-Dev CLI.
 
 ## What This Skill Does
 
 When invoked, this skill will:
 1. Run the command: `sdd-gen /qa-test-run <featureName>`
-2. Auto-install @playwright/test if not present in the project
-3. Auto-install Playwright browsers if not present
-4. Add `qa-run:<featureName>` script to package.json
-5. Provide the execution command: `npm run qa-run:<featureName>`
+2. Auto-detect framework from the generated test file in `tests/` directory
+3. Auto-install Node dependencies (`@playwright/test`) if required
+4. Add `qa-run:<featureName>` script to package.json (Node frameworks only)
+5. Execute the correct test command for the detected framework
+
+## Supported Frameworks
+
+| Framework | Test File | Run Command |
+|-----------|-----------|-------------|
+| Playwright (E2E) | `tests/<feature>.spec.ts` | `npx playwright test tests/<feature>.spec.ts` |
+| Jest (JS/TS) | `tests/<feature>.test.ts` | `npx jest tests/<feature>.test.ts` |
+| PHPUnit (Laravel) | `tests/Feature/<Feature>Test.php` | `php artisan test --filter=<feature>` |
+| xUnit / NUnit (.NET) | `tests/<Feature>Tests.cs` | `dotnet test --filter <feature>` |
+| JUnit 5 (Java) | `tests/src/test/java/<Feature>Test.java` | `mvn test -Dtest=<Feature>Test` |
+| pytest (Python) | `tests/test_<feature>.py` | `python -m pytest tests/test_<feature>.py` |
+| Go testing | `tests/<feature>_test.go` | `go test -v ./tests/...` |
 
 ## When to Use
 
 Use this skill when you need to:
-- Set up Playwright test execution for a feature
-- Add test scripts to package.json
-- Ensure Playwright dependencies are installed
-- Run E2E tests for a specific feature
+- Run generated tests for a feature
+- Execute the correct test runner without manual command typing
+- Add test scripts to package.json for Node-based projects
+- Ensure test dependencies are installed
 
 ## How to Use
 
@@ -35,36 +47,26 @@ Provide the feature name as input:
 Feature name: user-authentication
 ```
 
-The skill will then execute the CLI command and set up test execution.
-
-## What Gets Done
-
-The skill performs the following:
-- Checks for @playwright/test in package.json
-- Installs @playwright/test if not present
-- Installs Playwright browsers if not present
-- Adds test script to package.json scripts section
-- Provides command to run the tests
+The skill will detect the framework and run the tests automatically.
 
 ## Prerequisites
 
 Before using this skill, ensure:
-- Test script exists in `tests/<featureName>.spec.ts`
-- package.json exists in the project root
-- Node.js and npm are installed
+- A test file was generated via `sdd-gen /qa-test-script <featureName>`
+- The project's runtime is available (Node.js, PHP, .NET SDK, JDK, Python, or Go)
+- package.json exists if using Playwright or Jest
 
-## After Setup
+## After Running
 
-After the setup is complete, you can:
-1. Run tests using: `npm run qa-run:<featureName>`
-2. Or run directly: `npx playwright test tests/<featureName>.spec.ts`
-3. View test results in the terminal
-4. Check test reports in the test-results/ directory
+After the tests run, you can:
+1. Review the terminal output
+2. Generate QA report: `sdd-gen /qa-report <featureName>`
+3. Document any failures and fix them
+4. Re-run with: `sdd-gen /qa-test-run <featureName>`
 
 ## Notes
 
-- The CLI will auto-install Playwright dependencies if needed
-- Browsers are installed automatically if not present
-- The test script is added to package.json for easy execution
-- This skill handles all Playwright setup automatically
-- No manual Playwright installation required
+- The framework is detected automatically from the generated test file
+- Node-based frameworks (Playwright, Jest) also get a `qa-run:<feature>` script in package.json
+- For PHPUnit, JUnit, xUnit/NUnit, pytest, and Go, the native runner is invoked directly
+- Playwright browsers are installed automatically if missing
