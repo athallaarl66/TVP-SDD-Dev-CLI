@@ -48,4 +48,4 @@ After the feature design is generated, you should:
 ## Next Steps
 
 After generating the feature design:
-1. Run breakdown: `sdd-gen /breakdown-task <prd-file> <featureName>`
+1. Run breakdown: `sdd-gen /sdd-breakdown-task <prd-file> <featureName>`

@@ -15,8 +15,8 @@ Generate Product Requirements Document (PRD) for a feature using the TVP-SDD-Dev
 
 When invoked, this skill will:
 1. Run the command: `sdd-gen /prd <featureName>`
-2. Generate a PRD document template in `.devin/skills/<featureName>-PRD.md`
-3. The document will be generated to all existing AI tool folders (.devin, .opencode, .claude, .antigravity)
+2. Generate a PRD document template at `docs/features/<featureName>-prd.md`
+3. Pre-fill the template with the feature name, project name (from package.json), and current date
 
 ## When to Use
 
@@ -62,7 +62,7 @@ After the PRD is generated, you should:
 
 ## Notes
 
-- The document is generated to `docs/features/{featureName}/prd.md`
-- The document is also copied to AI tool folders if they exist
-- The template provides structure - you need to fill in the actual content
+- The document is generated to `docs/features/{featureName}-prd.md`
+- The template is pre-filled with feature name, project name, and current date
+- The template provides structure - you need to fill in the actual product content
 - This is the first step in the documentation workflow before Technical Design

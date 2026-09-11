@@ -13,27 +13,29 @@ When invoked, this workflow will:
 1. Run the command: `sdd-gen /sdd-breakdown-task <prd-file-path> [featureName]`
 2. Parse the PRD.md file to extract user stories and acceptance criteria
 3. Create folder structure: `docs/production/<feature-name>/`
-4. Generate 4 files per user acceptance (auto-incremented from PRD):
-   - `<feature><num>-prod.md` - User acceptance from production perspective
-   - `<feature><num>-testing.md` - Testing scenarios
-   - `<feature><num>-design.md` - Wireframe + Figma/Sketch links
-   - `<feature><num>-tech.md` - API specs, seed data, permissions
+4. Generate 4 files per user acceptance (numbered by PRD order):
+   - `<feature>-<no>-<story-slug>-prod.md` - User acceptance from production perspective
+   - `<feature>-<no>-<story-slug>-testing.md` - Testing scenarios
+   - `<feature>-<no>-<story-slug>-design.md` - Wireframe + Figma/Sketch links
+   - `<feature>-<no>-<story-slug>-tech.md` - API specs, seed data, permissions
+
+Numbering (`<no>`) follows the user-story order in the PRD, so the files sort in implementation sequence.
 
 ## Input
 
 Provide the PRD file path and optionally a feature name:
 ```
-PRD file path: docs/features/user-authentication/prd.md
+PRD file path: docs/features/user-authentication-prd.md
 Feature name (optional): user-authentication
 ```
 
-If feature name is omitted, the skill will process all features from the PRD and group by feature.
+If feature name is omitted, it is extracted from the PRD filename (e.g. `user-authentication-prd.md` → `user-authentication`). Both flat (`<feature>-prd.md`) and folder (`<feature>/prd.md`) layouts are supported.
 
 ## What Gets Generated
 
 For each user acceptance in the PRD, the following files are generated:
 
-### Production Requirements (`<feature><num>-prod.md`)
+### Production Requirements (`<feature>-<no>-<story-slug>-prod.md`)
 - User acceptance criteria
 - Business value
 - Success metrics
@@ -41,7 +43,7 @@ For each user acceptance in the PRD, the following files are generated:
 - User journey
 - Edge cases and constraints
 
-### Testing Scenarios (`<feature><num>-testing.md`)
+### Testing Scenarios (`<feature>-<no>-<story-slug>-testing.md`)
 - Test cases with Given/When/Then format
 - Edge cases
 - Negative testing
@@ -49,7 +51,7 @@ For each user acceptance in the PRD, the following files are generated:
 - Security testing
 - Acceptance criteria verification
 
-### Design Specifications (`<feature><num>-design.md`)
+### Design Specifications (`<feature>-<no>-<story-slug>-design.md`)
 - Wireframe descriptions
 - Figma/Sketch links
 - UI components
@@ -58,7 +60,7 @@ For each user acceptance in the PRD, the following files are generated:
 - Animation and interactions
 - Accessibility requirements
 
-### Technical Specifications (`<feature><num>-tech.md`)
+### Technical Specifications (`<feature>-<no>-<story-slug>-tech.md`)
 - API endpoints
 - Database changes
 - Permissions
@@ -76,20 +78,24 @@ The generated files follow this structure:
 ```
 docs/production/
 ├── <feature-name>/
-│   ├── <feature><num>-prod.md
-│   ├── <feature><num>-testing.md
-│   ├── <feature><num>-design.md
-│   └── <feature><num>-tech.md
+│   ├── <feature>-<no>-<story-slug>-prod.md
+│   ├── <feature>-<no>-<story-slug>-testing.md
+│   ├── <feature>-<no>-<story-slug>-design.md
+│   └── <feature>-<no>-<story-slug>-tech.md
 ```
 
 Example:
 ```
 docs/production/
 ├── user-authentication/
-│   ├── user-authentication01-prod.md
-│   ├── user-authentication01-testing.md
-│   ├── user-authentication01-design.md
-│   └── user-authentication01-tech.md
+│   ├── user-authentication-01-cv-upload-prod.md
+│   ├── user-authentication-01-cv-upload-testing.md
+│   ├── user-authentication-01-cv-upload-design.md
+│   └── user-authentication-01-cv-upload-tech.md
+│   ├── user-authentication-02-verify-identity-prod.md
+│   ├── user-authentication-02-verify-identity-testing.md
+│   ├── user-authentication-02-verify-identity-design.md
+│   └── user-authentication-02-verify-identity-tech.md
 ```
 
 ## After Generation
@@ -107,14 +113,11 @@ After the breakdown files are generated, you should:
 The workflow will handle these error cases:
 - PRD file not found → Error with message to run `/prd` first
 - PRD has no user stories → Warning message
-- Feature name provided but not found in PRD → Error with list of available features
 - Folder creation fails → Error with permission message
 
 ## Notes
 
 - The PRD must exist before running this command
 - User stories are extracted from the "User Stories" section of the PRD
-- Auto-increment numbering is based on user story order
-- If featureName is provided, only that feature's user stories are processed
-- If featureName is omitted, all user stories are processed and grouped by feature
+- If featureName is omitted, it is extracted from the PRD filename
 - This is the second step in the documentation workflow after PRD generation
