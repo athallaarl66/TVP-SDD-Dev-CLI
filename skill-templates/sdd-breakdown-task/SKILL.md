@@ -14,7 +14,7 @@ Parse Product Requirements Document (PRD) and generate scenario-level documentat
 ## What This Skill Does
 
 When invoked, this skill will:
-1. Run the command: `sdd-gen /sdd-breakdown-task <prd-file-path> [featureName]`
+1. Run the command: `sdd-gen /breakdown-task <prd-file-path> [featureName]`
 2. Parse the PRD.md file to extract user stories and acceptance criteria
 3. Create folder structure: `docs/production/<feature-name>/`
 4. Generate 4 files per user acceptance (numbered by PRD order):
