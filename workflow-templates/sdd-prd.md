@@ -47,7 +47,7 @@ After the PRD is generated, you should:
 ## Next Steps
 
 After completing the PRD document:
-1. Breakdown PRD into scenario-level docs: `sdd-gen /sdd-breakdown-task <prd-file> <featureName>`
+1. Breakdown PRD into scenario-level docs: `sdd-gen /breakdown-task <prd-file> <featureName>`
 2. Generate Technical Design: `sdd-gen /technical <featureName>`
 3. Generate Spec Test: `sdd-gen /spec-test <featureName>`
 4. Create DESIGN.md for visual specifications (optional)

@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.0] - 2026-09-24
+
+### Added
+- **Interactive CLI**: Commands (`/prd`, `/technical`, `/feature-design`, `/breakdown-task`, `/qa-*`) now prompt for missing feature name and offer next-step radio guidance when run in a terminal; safe in non-TTY (usage error instead of hanging)
+- **`sdd-implement-code` skill/workflow**: Implement a single numbered user-story scenario from the breakdown files (`-prod`, `-tech`, `-design`, `-testing`), with optional global context from `-technical.md`
+
+### Changed
+- **Renamed `/sdd-breakdown-task` → `/breakdown-task`** (`/sdd-breakdown-task` kept as alias for backward compatibility)
+- **Synced `sdd-*` skills, workflows, and templates into `.opencode/`** for all installed AI tool folders
+
+### Fixed
+- **`/qa-test-run`**: Test failure now propagates a non-zero exit code instead of swallowing it
+- **`/install-all-skills`**: Banner version read from `package.json` instead of hardcoded
+- **Docs**: `/init` output now correctly documented as PRD + Technical + Spec Test + QA Report; removed dead `/spec-test` reference from generated `docs/README.md`
+
 ## [1.3.6] - 2026-09-11
 
 ### Added
