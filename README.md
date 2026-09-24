@@ -26,7 +26,7 @@ CLI tool to make development documentation faster and easier.
 Generates PRD, Technical Design, and QA Report automatically.
 Breaks down PRD into scenario-level documentation for granular implementation.
 Integrated with Playwright for E2E testing.
-Works with AI tool folders: `.devin` `.opencode` `.claude` `.antigravity`
+Works with AI tool folders: `.devin` `.opencode` `.claude` `.antigravity` `.hermes`
 Includes Design System and Feature Design documentation.
 
 ---
@@ -72,7 +72,7 @@ sdd-gen /init <feature-name>
 
 **Important:**
 
-- `/install-all-skills` → Installs skills/workflows to AI tool folders (`.devin`, `.opencode`, `.claude`, `.antigravity`) for AI tools
+- `/install-all-skills` → Installs skills/workflows to AI tool folders (`.devin`, `.opencode`, `.claude`, `.antigravity`, `.hermes`) for AI tools
 - Documentation commands → Generate documentation to `docs/` folder for human reference
 
 ---
@@ -183,7 +183,7 @@ sdd-gen /qa-report user-authentication
 - `sdd-design-system` — generate global Design System documentation
 - `sdd-feature-design` — generate feature-level design documentation
 
-> all skills & workflows available for Devin Cascade, Claude, OpenCode, and Antigravity.
+> all skills & workflows available for Devin Cascade, Claude, OpenCode, Antigravity, and Hermes.
 
 ---
 
@@ -200,6 +200,7 @@ your-project/
 ├── .opencode/                  # same structure
 ├── .claude/                    # same structure
 ├── .antigravity/               # same structure
+├── .hermes/                    # same structure
 ├── docs/
 │   ├── DESIGN.md               # global design system
 │   ├── features/
