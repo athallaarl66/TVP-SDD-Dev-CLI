@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0] - 2026-09-24
+
+### Added
+- **`/implement-code` CLI command**: Promotes the implement-code flow from AI skill to shell command. `sdd-gen /implement-code <scenario-number> [feature]` (alias `/sdd-implement-code`) generates an implementation brief for a numbered user-story scenario from its breakdown files (`-prod`, `-tech`, `-design`, `-testing`).
+- **`--yes` non-interactive mode**: `sdd-gen --yes <command>` runs headless with defaults (feature derived from PRD file or config, detected test framework), safe for CI/scripts; no prompts, no hangs.
+- **`sdd-review-code` skill/workflow**: Reviews an implemented scenario against breakdown docs, emits `ready-for-qa` gate, supports `skip=<comma roles>`.
+- **Project config persistence**: `sdd.config.json` (project type, test framework, last feature) used as defaults before prompting; explicit args win over config.
+- **Automated tests**: Real `npm test` suite (breaking change — old stub removed) covering prompt fallback, breakdown, exit-code propagation, config, implement-code, version, release helpers.
+
+### Changed
+- **`--version` / `-v`** now reads from `package.json` via single source (`lib/utils/version.js`).
+- **Release automation**: `npm run release:patch|minor|major` bumps version in `package.json`, README (`**version**`, `**last updated**`, `## version history` row), and CHANGELOG together.
+
 ## [1.4.0] - 2026-09-24
 
 ### Added
