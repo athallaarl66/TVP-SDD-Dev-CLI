@@ -241,6 +241,18 @@ TVP-SDD-Dev-CLI/
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.4.0 | 2026-09-24 | Interactive CLI and implement-code skill |
+| | | - `/prd`, `/technical`, `/feature-design`, `/breakdown-task`, `/qa-*` prompt for missing args and offer next-step radio guidance (non-TTY safe) |
+| | | - Added `sdd-implement-code` skill/workflow: implement a numbered user-story scenario from breakdown files |
+| | | - Renamed `/sdd-breakdown-task` → `/breakdown-task` (alias kept) |
+| | | - `/qa-test-run` propagates test failure exit code |
+| | | - Synced `sdd-*` skills/workflows/templates to `.opencode/` |
+| | | - Docs fixes: `/init` output, dead `/spec-test` reference |
+| 1.3.6 | 2026-09-11 | Go support and qa workflow improvements |
+| | | - Added Go testing framework support (detection, template, run) |
+| | | - `/qa-test-run` auto-detects and runs all supported frameworks |
+| | | - Templates pre-filled with feature name, project name, date |
+| | | - PRD breakdown numbered by user story order (`{feature}-{no}-{slug}-{type}.md`) |
 | 1.3.0 | 2026-07-27 | Multi-framework test support and TypeScript migration |
 | | | - Migrated QA test script output from `.spec.js` to `.spec.ts` |
 | | | - Added multi-framework unit test support (Jest, PHPUnit, xUnit, NUnit, JUnit, pytest) |
