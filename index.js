@@ -7,7 +7,8 @@ const program = new Command();
 
 program
   .version(getCliVersion(), '-v, --version')
-  .option('-y, --yes', 'run non-interactively, using defaults instead of prompts');
+  .option('-y, --yes', 'run non-interactively, using defaults instead of prompts')
+  .option('-f, --force', 'overwrite generated files that already exist');
 
 // Passed to command modules; parsed option values (incl. `yes`) are read lazily
 // at action time since they are only populated after program.parse().

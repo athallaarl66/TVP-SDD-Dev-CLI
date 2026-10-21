@@ -5,11 +5,11 @@ const fs = require('fs-extra');
 const CLI_DIR = path.resolve(__dirname, '..', '..');
 const INDEX = path.join(CLI_DIR, 'index.js');
 
-function runCli(args, cwd) {
+function runCli(args, cwd, env) {
   return spawnSync(process.execPath, [INDEX, ...args], {
     cwd: cwd || CLI_DIR,
     encoding: 'utf-8',
-    env: { ...process.env, FORCE_COLOR: '0' }
+    env: { ...process.env, FORCE_COLOR: '0', ...(env || {}) }
   });
 }
 

@@ -8,7 +8,8 @@ test('--yes: no-arg /prd derives feature name from docs/features/*-prd.md', () =
   const dir = tmpProject();
   fs.outputFileSync(path.join(dir, 'docs', 'features', 'user-auth-prd.md'), '# PRD\n');
 
-  const { status, stdout } = runCli(['--yes', '/prd'], dir);
+  // --force: the fixture PRD already occupies the output path.
+  const { status, stdout } = runCli(['--yes', '--force', '/prd'], dir);
   assert.strictEqual(status, 0, stdout);
   assert.match(stdout, /user-auth-prd\.md/);
   fs.removeSync(dir);

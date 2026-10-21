@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install from lockfile
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Package inspection
+        run: |
+          npm pack --dry-run --json > "$RUNNER_TEMP/pack.json"
+          node -e '
+            const fs = require("fs");
+            const info = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/pack.json", "utf8"))[0];
+            const paths = info.files.map((f) => f.path);
+            const bad = paths.filter((p) => /^(tests|scripts|docs|openspec|\.github|node_modules)\//.test(p));
+            if (bad.length) {
+              console.error("Unexpected files in package:", bad);
+              process.exit(1);
+            }
+            for (const required of ["index.js", "package.json", "LICENSE", "README.md"]) {
+              if (!paths.includes(required)) {
+                console.error("Missing required package file:", required);
+                process.exit(1);
+              }
+            }
+            console.log("package ok:", info.entryCount, "files,", info.unpackedSize, "bytes unpacked");
+          '
