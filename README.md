@@ -11,12 +11,10 @@
 
 > _generate docs. drown in automation. ship faster._
 
----
+[![CI](https://github.com/athallaarl66/TVP-SDD-Dev-CLI/actions/workflows/ci.yml/badge.svg)](https://github.com/athallaarl66/TVP-SDD-Dev-CLI/actions/workflows/ci.yml) [![npm](https://img.shields.io/npm/v/sdd-dev-cli.svg)](https://www.npmjs.com/package/sdd-dev-cli) [![license](https://img.shields.io/github/license/athallaarl66/TVP-SDD-Dev-CLI.svg)](LICENSE) [![node](https://img.shields.io/node/v/sdd-dev-cli.svg)](package.json)
 
-**version** · `1.5.0`  
-**license** · `MIT`  
-**status** · `maintained`  
-**last updated** · `2026-10-21`
+**Generate a PRD, a technical design, and QA test scaffolds from one CLI — no API key, no AI service, no database.**
+Plain Markdown lands in your repo. Works with `.claude` `.cursor` `.devin` `.opencode` `.antigravity` `.hermes`.
 
 ---
 
