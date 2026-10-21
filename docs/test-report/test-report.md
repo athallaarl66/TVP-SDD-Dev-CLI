@@ -10,14 +10,14 @@ Results of the automated test suite for `sdd-dev-cli`.
 | Operating system | Windows 11 (`win32 10.0.26200`) |
 | Node.js | v26.7.0 |
 | npm | 11.19.0 |
-| Result | 56 tests, 56 passed, 0 failed, 0 skipped |
+| Result | 59 tests, 59 passed, 0 failed, 0 skipped |
 
 ## Recorded output
 
 ```text
-ℹ tests 56
+ℹ tests 59
 ℹ suites 0
-ℹ pass 56
+ℹ pass 59
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
@@ -39,6 +39,7 @@ Results of the automated test suite for `sdd-dev-cli`.
 | `tests/cli/release-preconditions.test.js` | release gates: evidence, security policy, metadata, test gate |
 | `tests/cli/safety.test.js` | feature-name validation, path containment, overwrite guard, missing template |
 | `tests/cli/test-generation.test.js` | generated-source encoding, skip markers, cross-feature isolation |
+| `tests/cli/uat-status.test.js` | UAT report status checks: side effects and process errors | 
 | `tests/cli/version.test.js` | `--version` matches `package.json` |
 | `tests/cli/docs.test.js` | release documents exist, mermaid blocks are well formed, PRD command list and technical-design file references match the source |
 
@@ -48,7 +49,7 @@ Results of the automated test suite for `sdd-dev-cli`.
 - No test executes a real Playwright, PHPUnit, xUnit, NUnit, JUnit, pytest, or Go suite. Generated files are checked for syntax and skip markers only.
 - `/qa-test-run` is not exercised against a real project test runner.
 
-Re-run and compare:
+Re-run and compare; this file is not rewritten by the test command:
 
 ```bash
 npm test

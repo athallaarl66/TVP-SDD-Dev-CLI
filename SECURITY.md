@@ -2,12 +2,18 @@
 
 ## Supported versions
 
-The latest published minor version of `sdd-dev-cli` receives security fixes.
+No tagged or published release exists yet: `git tag` is empty and the CLI has
+not been published to npm. Security fixes are applied to the `1.5.x` version in
+`package.json` on the default branch; earlier development snapshots are not
+supported.
 
 | Version | Supported |
 | --- | --- |
-| 1.5.x | Yes |
-| < 1.5 | No |
+| 1.5.x (unreleased, default branch) | Yes |
+| older development snapshots | No |
+
+Once a release is tagged and published, this table moves to "most recent minor
+line only".
 
 ## Reporting a vulnerability
 
@@ -21,8 +27,11 @@ Do not open a public issue for a security problem.
 3. Expect an acknowledgement within 7 days and a fix or mitigation plan within
    30 days for confirmed issues.
 
-If GitHub advisories are unavailable to you, contact the maintainer listed in
-`package.json` and mark the message as a security report.
+If GitHub Security Advisories are unavailable to you, open a normal issue that
+contains no vulnerability details and ask for a private channel; the maintainer
+will reply with one. `package.json` lists `author`, `repository`, and `bugs` but
+no private email address, so a public issue is the only fallback contact route —
+keep it free of technical detail.
 
 ## Scope
 
@@ -44,5 +53,14 @@ Out of scope:
 
 `sdd-dev-cli` writes files inside the current project directory (`docs/`,
 `tests/`, and the AI tool folders you select), stores settings in
-`sdd.config.json`, and runs project test commands without a shell. It does not
+`sdd.config.json`, and adds a `qa-run:<feature>` entry to the project's
+`package.json` when `/qa-test-run` prepares a Node test command. It does not
 send project content anywhere.
+
+Project test commands are spawned with an executable plus an argument array
+(`shell: false`), never through a shell string, so feature names and paths are
+passed as data. The single exception is `mvn` on Windows, which is a `.cmd` shim
+and therefore runs through `cmd.exe`; its arguments come from a validated slug
+and are quoted individually. The only network access happens when
+`/qa-test-run` triggers the Playwright dependency install for a Playwright
+project.

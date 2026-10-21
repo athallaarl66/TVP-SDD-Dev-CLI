@@ -14,11 +14,12 @@ Executed UAT for `sdd-dev-cli` against a packed tarball (not the working tree).
 
 The runner packs the CLI, extracts the tarball into a scratch directory, links
 the repository's installed dependencies, and executes every public command in
-an empty sample project. Re-run it with:
+an empty sample project. It prints its results and never edits this file; the
+rows below are recorded by hand after a run. Re-run it with:
 
 ```bash
 npm run uat
-npm run uat -- --json docs/uat-results.json
+npm run uat -- --json docs/test-report/uat-results.json
 ```
 
 ## Preparation

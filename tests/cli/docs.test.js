@@ -35,8 +35,8 @@ test('docs: required release documents exist', () => {
     'prd.md',
     'technical-design.md',
     'uat-plan.md',
-    'uat-report.md',
-    'test-report.md',
+    'test-report/uat-report.md',
+    'test-report/test-report.md',
     'release-checklist.md'
   ];
   for (const file of required) {

@@ -1,5 +1,23 @@
 # Changelog
 
+## [Unreleased]
+
+### Security
+- **Shell-free command execution**: `/qa-test-run` and interactive next-step prompts pass an executable plus an argument array (`shell: false`) instead of building a command string. On Windows, `npx`/`npm` are resolved to their `-cli.js` entry points and run through `node`; only `mvn` still needs `cmd.exe`, with every argument quoted.
+- **Feature names and output paths validated**: names containing `/`, `\`, `..`, or shell metacharacters are rejected before any file is written; every generated path is checked to stay inside `docs/` or `tests/`.
+- **Overwrite guard**: generation commands refuse to replace an existing file without `--force`.
+
+### Changed
+- **Generated tests are honest**: specification text is emitted as line comments (with PHP's `?>` neutralised), and the placeholder body is explicitly skipped (`test.skip`, `markTestSkipped`, `@Disabled`, `t.Skip`, `pytest.skip`) with an `AUTO-GENERATED PLACEHOLDER` warning, so an unwritten test cannot report a pass.
+- **`/implement-code` matching**: scenario files are selected by feature slug and scenario number together, so two features that reuse the same scenario number no longer mix into one brief.
+- **`/qa-test-run` help text**: describes running the detected framework's generated file rather than implying every framework runs.
+
+### Documentation
+- README: Node.js 20+ prerequisite, per-step outputs, `/init` versus `/breakdown-task`, overwrite behavior, failure-state recovery table, framework matrix separating parse-verified output from template-only output, and installation guidance without elevated permissions.
+- Added `CONTRIBUTING.md`; linked it and the evidence documents from the README.
+- **Evidence reports moved to `docs/test-report/`** (`test-report.md`, `uat-report.md`). README, `docs/prd.md`, `docs/uat-plan.md`, `docs/release-checklist.md`, and the release gate point at the new paths. Both reports are maintained by hand: `npm test` and `npm run uat` print results but never rewrite them.
+- SECURITY.md states the real execution model (`shell: false`, with the Windows `mvn` `cmd.exe` exception), the actual supported-version situation (no tagged or published release yet), and the available reporting fallback (`package.json` carries no private email).
+
 ## [1.5.0] - 2026-09-24
 
 ### Added

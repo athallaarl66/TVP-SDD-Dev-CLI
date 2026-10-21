@@ -49,11 +49,11 @@ function runCli(pkgDir, project, args) {
 }
 
 function record({ id, check, command, expect, result, evidence, files = [] }) {
-  const status = typeof result.status === 'number' ? result.status : result.status;
+  const status = result.status;
   const pass = expect === 'exit 0'
     ? status === 0
     : expect === 'non-zero'
-      ? status !== 0
+      ? Number.isInteger(status) && status > 0
       : null;
   results.push({
     id,

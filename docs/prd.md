@@ -63,7 +63,8 @@ Aliases: `/sdd-breakdown-task`, `/sdd-implement-code`.
 - Feature names must be a single slug; path separators and traversal are rejected.
 - Every generated path is checked to stay inside its output directory.
 - Existing generated files are preserved unless `--force` is given.
-- Project test commands run without a shell.
+- Project test commands run without a shell string (`shell: false`); the Windows
+  `mvn` `.cmd` shim is the documented `cmd.exe` exception.
 - Generated tests are skipped placeholders until a human writes assertions.
 
 ## 7. Success criteria
@@ -72,7 +73,7 @@ Aliases: `/sdd-breakdown-task`, `/sdd-implement-code`.
   documented commands.
 - Repeating a command never destroys an edited document without `--force`.
 - `npm test` and `npm run uat` pass before a release, with counts recorded in
-  `docs/test-report.md` and `docs/uat-report.md`.
+  `docs/test-report/test-report.md` and `docs/test-report/uat-report.md`.
 
 ## 8. Out of scope for 1.x
 

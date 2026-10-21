@@ -14,6 +14,16 @@ test('qa-test-run: runCommand propagates non-zero exit code from the underlying 
   assert.ok(status === 3 || /EXITCODE=3/.test(stdout), `status=${status} stdout=${stdout}`);
 });
 
+test('qa-test-run: native executable on PATH receives arguments unchanged', () => {
+  const script = `
+    const { runCommand } = require('./lib/commands/qa-test-run');
+    runCommand({ command: 'python', args: ['-c', 'import sys; print("ARG:" + sys.argv[1])', 'value with spaces'] }, process.cwd(), 'python');
+  `;
+  const { status, stdout, stderr } = runNode(script);
+  assert.strictEqual(status, 0, `${stdout}\n${stderr}`);
+  assert.match(stdout, /ARG:value with spaces/);
+});
+
 test('qa-test-run: runCommand refuses shell command strings', () => {
   const script = `
     const { runCommand } = require('./lib/commands/qa-test-run');

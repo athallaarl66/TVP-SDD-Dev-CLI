@@ -62,7 +62,7 @@ runner can point at an extracted tarball.
 | Path traversal via feature name | slug regex `^[A-Za-z0-9][A-Za-z0-9_-]*$` | `lib/utils/file.js` |
 | Write outside output root | `assertInside` compares resolved paths | `lib/utils/file.js` |
 | Silent overwrite | `writeGeneratedFile` refuses existing files | `lib/utils/file.js` |
-| Command injection | `spawnSync` with argument arrays, no shell | `lib/commands/qa-test-run.js`, `lib/utils/prompt.js` |
+| Command injection | `spawnSync` with `shell: false` and argument arrays; `cmd.exe` only for the Windows `mvn` `.cmd` shim, with quoted arguments | `lib/commands/qa-test-run.js`, `lib/utils/prompt.js` |
 | Injected code in generated tests | specification emitted as line comments, identifiers sanitised | `lib/utils/template.js` |
 | False-green tests | placeholders emitted as skip/disable markers | `lib/utils/template.js` |
 | Unknown framework config | validated before directories or config writes | `lib/commands/qa-test-script.js` |
@@ -261,4 +261,7 @@ sdd-gen [--yes] [--force] [--version] [--help] <command> [arguments]
 External processes invoked: the project's own test runner (`npx playwright`,
 `npx jest`, `php artisan`, `dotnet`, `mvn`, `python -m pytest`, `go test`) and
 `npm` for the on-demand Playwright install. All are started with argument
-arrays; no shell string is built from user input.
+arrays and `shell: false`; no shell string is built from user input. The one
+exception is `mvn` on Windows — a `.cmd` shim that cannot be spawned without
+`cmd.exe`, so its validated, individually quoted arguments are passed through
+`cmd.exe /d /s /c`.

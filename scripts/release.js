@@ -16,6 +16,7 @@ const SEGMENTS = { patch: 2, minor: 1, major: 0 };
 // before any file is touched.
 const REQUIRED_FILES = [
   'package.json',
+  'package-lock.json',
   'README.md',
   'CHANGELOG.md',
   'LICENSE',
@@ -23,8 +24,8 @@ const REQUIRED_FILES = [
   'docs/prd.md',
   'docs/technical-design.md',
   'docs/uat-plan.md',
-  'docs/uat-report.md',
-  'docs/test-report.md',
+  'docs/test-report/uat-report.md',
+  'docs/test-report/test-report.md',
   'docs/release-checklist.md'
 ];
 
@@ -100,6 +101,11 @@ function checkPreconditions(root = ROOT, { skipVerify = false, skipGit = false }
     if (!fs.existsSync(path.join(root, rel))) problems.push(`missing required file: ${rel}`);
   }
 
+  const securityPath = path.join(root, 'SECURITY.md');
+  if (fs.existsSync(securityPath) && !/https:\/\/github\.com\/[^\s/]+\/[^\s/]+\/security\/advisories\/new\b/i.test(fs.readFileSync(securityPath, 'utf-8'))) {
+    problems.push('SECURITY.md has no GitHub private security reporting URL');
+  }
+
   const pkgPath = path.join(root, 'package.json');
   if (fs.existsSync(pkgPath)) {
     try {
@@ -138,6 +144,11 @@ function release(segment, root = ROOT, options = {}) {
   }
 
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+  const lockPath = path.join(root, 'package-lock.json');
+  const lock = JSON.parse(fs.readFileSync(lockPath, 'utf-8'));
+  if (!lock.packages || !lock.packages[''] || lock.version !== pkg.version || lock.packages[''].version !== pkg.version) {
+    throw new Error('Release blocked: package-lock.json version does not match package.json');
+  }
   const version = bumpVersion(pkg.version, segment);
   const date = today();
 
@@ -147,11 +158,14 @@ function release(segment, root = ROOT, options = {}) {
   }
 
   pkg.version = version;
+  lock.version = version;
+  lock.packages[''].version = version;
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+  fs.writeFileSync(lockPath, JSON.stringify(lock, null, 2) + '\n');
   fs.writeFileSync(readmePath, updateReadme(fs.readFileSync(readmePath, 'utf-8'), version, date));
   fs.writeFileSync(changelogPath, updateChangelog(fs.readFileSync(changelogPath, 'utf-8'), version, date));
 
-  console.log(`Released ${version}. Files updated: package.json, README.md, CHANGELOG.md`);
+  console.log(`Prepared ${version}. Files updated: package.json, package-lock.json, README.md, CHANGELOG.md`);
   return version;
 }
 

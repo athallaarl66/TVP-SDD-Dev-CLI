@@ -22,10 +22,11 @@ function fixtureRoot({ omit = [] } = {}) {
       null,
       2
     ),
+    'package-lock.json': JSON.stringify({ name: 'sdd-dev-cli', version: '1.5.0', lockfileVersion: 3, packages: { '': { name: 'sdd-dev-cli', version: '1.5.0' } } }),
     'README.md': README,
     'CHANGELOG.md': CHANGELOG,
     LICENSE: 'MIT License\n',
-    'SECURITY.md': '# Security\n'
+    'SECURITY.md': '# Security\nReport privately: https://github.com/example/repo/security/advisories/new\n'
   };
   for (const rel of REQUIRED_FILES) {
     if (rel.startsWith('docs/')) files[rel] = '# doc\n';
@@ -38,12 +39,12 @@ function fixtureRoot({ omit = [] } = {}) {
 }
 
 test('release: blocks and writes nothing when evidence is missing', () => {
-  const root = fixtureRoot({ omit: ['docs/uat-report.md'] });
+  const root = fixtureRoot({ omit: ['docs/test-report/uat-report.md'] });
   const before = fs.readFileSync(path.join(root, 'package.json'), 'utf-8');
 
   assert.throws(
     () => release('patch', root, { skipVerify: true }),
-    /Release blocked:[\s\S]*docs\/uat-report\.md/
+    /Release blocked:[\s\S]*docs\/test-report\/uat-report\.md/
   );
 
   assert.strictEqual(fs.readFileSync(path.join(root, 'package.json'), 'utf-8'), before);
@@ -58,13 +59,20 @@ test('release: blocks when SECURITY.md is missing', () => {
   fs.removeSync(root);
 });
 
+test('release: blocks security policy without a private reporting path', () => {
+  const root = fixtureRoot();
+  fs.writeFileSync(path.join(root, 'SECURITY.md'), '# Security\n');
+  assert.ok(checkPreconditions(root, { skipVerify: true }).some((p) => p.includes('security reporting')));
+  fs.removeSync(root);
+});
+
 test('release: blocks when package metadata is incomplete', () => {
   const root = fixtureRoot();
   const pkgPath = path.join(root, 'package.json');
   const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
   delete pkg.files;
   delete pkg.repository;
-  pkg.license = 'UNLICENSED';
+  pkg.license = 'Apache-2.0';
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2));
 
   const problems = checkPreconditions(root, { skipVerify: true });
@@ -81,6 +89,9 @@ test('release: bumps version and appends evidence-verified release rows', () => 
   assert.strictEqual(version, '1.6.0');
   const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf-8'));
   assert.strictEqual(pkg.version, '1.6.0');
+  const lock = JSON.parse(fs.readFileSync(path.join(root, 'package-lock.json'), 'utf-8'));
+  assert.strictEqual(lock.version, '1.6.0');
+  assert.strictEqual(lock.packages[''].version, '1.6.0');
   assert.match(fs.readFileSync(path.join(root, 'README.md'), 'utf-8'), /\*\*version\*\* · `1\.6\.0`/);
   assert.match(fs.readFileSync(path.join(root, 'CHANGELOG.md'), 'utf-8'), /## \[1\.6\.0\]/);
   fs.removeSync(root);

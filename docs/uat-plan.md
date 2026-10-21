@@ -55,4 +55,4 @@ Run every command in an empty sample project (a directory with a
 
 A release is acceptable only when every row in sections 2 and 3 has a recorded
 result and section 1 confirms the tarball contents. Record the run in
-`docs/uat-report.md`.
+`docs/test-report/uat-report.md`.

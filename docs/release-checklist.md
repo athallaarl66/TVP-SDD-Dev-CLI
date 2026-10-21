@@ -6,7 +6,7 @@ published.
 ## 1. Quality gates
 
 - [ ] `npm ci` completes from `package-lock.json`
-- [ ] `npm test` passes (record the counts in `docs/test-report.md`)
+- [ ] `npm test` passes (record the counts in `docs/test-report/test-report.md`)
 - [ ] CI is green on Node.js 20, 22, and 24
 - [ ] `npm pack --dry-run --json` lists only runtime files, templates, license, and docs entry points
 - [ ] No `tests/`, `scripts/`, `docs/`, `openspec/`, or `.github/` files in the package
@@ -15,8 +15,8 @@ published.
 
 - [ ] `docs/uat-plan.md` matches the current command list in `index.js`
 - [ ] `npm run uat` passes, or every skip is justified in the report
-- [ ] `docs/uat-report.md` records CLI version, OS, Node.js version, and date
-- [ ] `docs/test-report.md` counts match the last `npm test` output
+- [ ] `docs/test-report/uat-report.md` records CLI version, OS, Node.js version, and date
+- [ ] `docs/test-report/test-report.md` counts match the last `npm test` output
 - [ ] `docs/prd.md` and `docs/technical-design.md` match the code being shipped
 
 ## 3. Policy and metadata
