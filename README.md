@@ -16,7 +16,7 @@
 **version** · `1.5.0`  
 **license** · `MIT`  
 **status** · `maintained`  
-**last updated** · `2026-09-24`
+**last updated** · `2026-10-21`
 
 ---
 
@@ -36,17 +36,14 @@ Includes Design System and Feature Design documentation.
 Requires **Node.js 20 or newer** (see `engines` in `package.json`).
 
 ```bash
-git clone https://github.com/athallaarl66/TVP-SDD-Dev-CLI.git
-cd TVP-SDD-Dev-CLI
-npm install
-npm link          # puts `sdd-gen` on your PATH
+npm install -g sdd-dev-cli
 
 # verify
 sdd-gen --help
-sdd-gen --version   # prints the version from package.json
+sdd-gen --version   # prints the installed version
 ```
 
-`npm link` only writes inside npm's own prefix, so it needs no elevated permissions. Do **not** run `sudo npm link` or `npm install -g` with `sudo`: root-owned files break later installs. If linking fails with `EACCES`, point npm at a user-owned prefix instead of escalating:
+Templates, skills, and workflows ship inside the package, so the install downloads nothing else. Do **not** use `sudo npm install -g` or `--unsafe-perm`: root-owned files break later updates. If the global install fails with `EACCES`, point npm at a user-owned prefix instead of escalating:
 
 ```bash
 # Unix
@@ -57,7 +54,16 @@ export PATH="$HOME/.npm-global/bin:$PATH"
 npm config set prefix "%USERPROFILE%\npm-global"
 # then add %USERPROFILE%\npm-global to PATH
 
-npm link
+npm install -g sdd-dev-cli
+```
+
+Installing from a local checkout (for contributing) works too:
+
+```bash
+git clone https://github.com/athallaarl66/TVP-SDD-Dev-CLI.git
+cd TVP-SDD-Dev-CLI
+npm ci
+npm link          # puts `sdd-gen` on your PATH
 ```
 
 On Windows, use Git Bash or PowerShell; both work. Every install step runs entirely inside the current user's profile, and the CLI never asks for administrator rights.
@@ -320,7 +326,7 @@ TVP-SDD-Dev-CLI/
 
 | Version | Date       | Changes                                                                                                                                         |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1.5.0   | 2026-09-24 | Hardened CLI tooling: `--yes`, `/implement-code`, config, tests, release                                                                        |
+| 1.5.0   | 2026-10-21 | First published release: shell-free test execution, honest placeholders, `--yes`, `/implement-code`, config, tests, release gates |
 | 1.4.0   | 2026-09-24 | Interactive CLI and implement-code skill                                                                                                        |
 |         |            | - `/prd`, `/technical`, `/feature-design`, `/breakdown-task`, `/qa-*` prompt for missing args and offer next-step radio guidance (non-TTY safe) |
 |         |            | - Added `sdd-implement-code` skill/workflow: implement a numbered user-story scenario from breakdown files                                      |

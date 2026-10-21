@@ -2,18 +2,13 @@
 
 ## Supported versions
 
-No tagged or published release exists yet: `git tag` is empty and the CLI has
-not been published to npm. Security fixes are applied to the `1.5.x` version in
-`package.json` on the default branch; earlier development snapshots are not
-supported.
+The latest published minor line receives security fixes. The current release is
+`1.5.0`, published to npm and tagged `v1.5.0` on 2026-10-21.
 
 | Version | Supported |
 | --- | --- |
-| 1.5.x (unreleased, default branch) | Yes |
-| older development snapshots | No |
-
-Once a release is tagged and published, this table moves to "most recent minor
-line only".
+| 1.5.x (npm `latest`, tag `v1.5.0`) | Yes |
+| < 1.5, development snapshots | No |
 
 ## Reporting a vulnerability
 

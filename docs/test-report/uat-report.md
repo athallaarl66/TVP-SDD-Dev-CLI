@@ -10,7 +10,7 @@ Executed UAT for `sdd-dev-cli` against a packed tarball (not the working tree).
 | Operating system | Windows 11 (`win32 10.0.26200`) |
 | Node.js | v26.7.0 |
 | npm | 11.19.0 |
-| Result | 18 passed, 0 failed, 1 skipped (19 checks) |
+| Result | 18 passed, 0 failed, 1 skipped (19 checks). The skipped check is `2.13 /qa-test-run` — not a pass. |
 
 The runner packs the CLI, extracts the tarball into a scratch directory, links
 the repository's installed dependencies, and executes every public command in

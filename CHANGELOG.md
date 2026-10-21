@@ -1,6 +1,14 @@
 # Changelog
 
-## [Unreleased]
+## [1.5.0] - 2026-10-21
+
+### Added
+- **`/implement-code` CLI command**: Promotes the implement-code flow from AI skill to shell command. `sdd-gen /implement-code <scenario-number> [feature]` (alias `/sdd-implement-code`) generates an implementation brief for a numbered user-story scenario from its breakdown files (`-prod`, `-tech`, `-design`, `-testing`).
+- **`--yes` non-interactive mode**: `sdd-gen --yes <command>` runs headless with defaults (feature derived from PRD file or config, detected test framework), safe for CI/scripts; no prompts, no hangs.
+- **`sdd-review-code` skill/workflow**: Reviews an implemented scenario against breakdown docs, emits `ready-for-qa` gate, supports `skip=<comma roles>`.
+- **Project config persistence**: `sdd.config.json` (project type, test framework, last feature) used as defaults before prompting; explicit args win over config.
+- **Automated tests**: Real `npm test` suite (breaking change — old stub removed) covering prompt fallback, breakdown, exit-code propagation, config, implement-code, version, release helpers.
+- **`CONTRIBUTING.md`**: local setup, test commands, framework-addition checklist, pull request expectations.
 
 ### Security
 - **Shell-free command execution**: `/qa-test-run` and interactive next-step prompts pass an executable plus an argument array (`shell: false`) instead of building a command string. On Windows, `npx`/`npm` are resolved to their `-cli.js` entry points and run through `node`; only `mvn` still needs `cmd.exe`, with every argument quoted.
@@ -8,6 +16,8 @@
 - **Overwrite guard**: generation commands refuse to replace an existing file without `--force`.
 
 ### Changed
+- **`--version` / `-v`** now reads from `package.json` via single source (`lib/utils/version.js`).
+- **Release automation**: `npm run release:patch|minor|major` bumps version in `package.json`, README (`**version**`, `**last updated**`, `## version history` row), and CHANGELOG together.
 - **Generated tests are honest**: specification text is emitted as line comments (with PHP's `?>` neutralised), and the placeholder body is explicitly skipped (`test.skip`, `markTestSkipped`, `@Disabled`, `t.Skip`, `pytest.skip`) with an `AUTO-GENERATED PLACEHOLDER` warning, so an unwritten test cannot report a pass.
 - **`/implement-code` matching**: scenario files are selected by feature slug and scenario number together, so two features that reuse the same scenario number no longer mix into one brief.
 - **`/qa-test-run` help text**: describes running the detected framework's generated file rather than implying every framework runs.
@@ -16,20 +26,7 @@
 - README: Node.js 20+ prerequisite, per-step outputs, `/init` versus `/breakdown-task`, overwrite behavior, failure-state recovery table, framework matrix separating parse-verified output from template-only output, and installation guidance without elevated permissions.
 - Added `CONTRIBUTING.md`; linked it and the evidence documents from the README.
 - **Evidence reports moved to `docs/test-report/`** (`test-report.md`, `uat-report.md`). README, `docs/prd.md`, `docs/uat-plan.md`, `docs/release-checklist.md`, and the release gate point at the new paths. Both reports are maintained by hand: `npm test` and `npm run uat` print results but never rewrite them.
-- SECURITY.md states the real execution model (`shell: false`, with the Windows `mvn` `cmd.exe` exception), the actual supported-version situation (no tagged or published release yet), and the available reporting fallback (`package.json` carries no private email).
-
-## [1.5.0] - 2026-09-24
-
-### Added
-- **`/implement-code` CLI command**: Promotes the implement-code flow from AI skill to shell command. `sdd-gen /implement-code <scenario-number> [feature]` (alias `/sdd-implement-code`) generates an implementation brief for a numbered user-story scenario from its breakdown files (`-prod`, `-tech`, `-design`, `-testing`).
-- **`--yes` non-interactive mode**: `sdd-gen --yes <command>` runs headless with defaults (feature derived from PRD file or config, detected test framework), safe for CI/scripts; no prompts, no hangs.
-- **`sdd-review-code` skill/workflow**: Reviews an implemented scenario against breakdown docs, emits `ready-for-qa` gate, supports `skip=<comma roles>`.
-- **Project config persistence**: `sdd.config.json` (project type, test framework, last feature) used as defaults before prompting; explicit args win over config.
-- **Automated tests**: Real `npm test` suite (breaking change — old stub removed) covering prompt fallback, breakdown, exit-code propagation, config, implement-code, version, release helpers.
-
-### Changed
-- **`--version` / `-v`** now reads from `package.json` via single source (`lib/utils/version.js`).
-- **Release automation**: `npm run release:patch|minor|major` bumps version in `package.json`, README (`**version**`, `**last updated**`, `## version history` row), and CHANGELOG together.
+- SECURITY.md states the real execution model (`shell: false`, with the Windows `mvn` `cmd.exe` exception) and the available reporting fallback (`package.json` carries no private email).
 
 ## [1.4.0] - 2026-09-24
 
