@@ -335,6 +335,27 @@ sudo npm link
 
 ---
 
+## project docs
+
+Shipped in the repository, not in the npm tarball:
+
+- [docs/prd.md](docs/prd.md) — problem, users, command inventory, safety promises
+- [docs/technical-design.md](docs/technical-design.md) — module map, generation pipeline, safety model, diagrams
+- [docs/uat-plan.md](docs/uat-plan.md) — manual acceptance checks for a build
+- [docs/uat-report.md](docs/uat-report.md) — last executed UAT run with versions and results
+- [docs/test-report.md](docs/test-report.md) — last automated test run with counts
+- [docs/release-checklist.md](docs/release-checklist.md) — gate list before tagging a release
+- [SECURITY.md](SECURITY.md) — supported versions and private vulnerability reporting
+
+Regenerate the evidence with:
+
+```bash
+npm test
+npm run uat
+```
+
+---
+
 ## references
 
 - [Playwright Docs](https://playwright.dev/)
@@ -344,5 +365,5 @@ sudo npm link
 ---
 
 ```
- © Talapvnk — unlicensed.
+ © Talapvnk — MIT.
 ```

@@ -7,7 +7,8 @@
     "sdd-gen": "./index.js"
   },
   "scripts": {
-    "test": "node --test \"tests/cli/*.test.js\"",
+    "test": "node --test",
+    "uat": "node scripts/uat.js",
     "release:patch": "node scripts/release.js patch",
     "release:minor": "node scripts/release.js minor",
     "release:major": "node scripts/release.js major"
@@ -18,8 +19,24 @@
     "documentation",
     "development"
   ],
-  "author": "",
+  "author": "Athalla Arli",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/athallaarl66/TVP-SDD-Dev-CLI.git"
+  },
+  "bugs": {
+    "url": "https://github.com/athallaarl66/TVP-SDD-Dev-CLI/issues"
+  },
+  "homepage": "https://github.com/athallaarl66/TVP-SDD-Dev-CLI#readme",
+  "files": [
+    "index.js",
+    "lib/",
+    "templates/",
+    "skill-templates/",
+    "workflow-templates/",
+    "CHANGELOG.md"
+  ],
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
@@ -28,6 +45,6 @@
     "ora": "^5.4.1"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=20.0.0"
   }
 }

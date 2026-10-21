@@ -4,7 +4,6 @@ openspec
 .claude
 .antigravity
 node_modules
-package-lock.json
 .DS_Store
 *.log
 .env
