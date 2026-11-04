@@ -11,7 +11,7 @@ Review one or all implemented user story scenarios against the breakdown files u
 
 When invoked, this workflow will:
 1. Take a feature name and a scenario number (`all` for every scenario)
-2. Locate the scenario's breakdown files: `docs/production/<feature>/<feature>-<no>-<slug>-{prod,tech,design,testing}.md`
+2. Locate nested story files: `docs/production/<feature>/<epic-slug>/<no>-<story-slug>/{prod,tech,design,testing}.md`; read legacy flat files only when nested files are absent.
 3. Review the implemented code in `src/` (or the project's main source tree) against each file
 4. Report per-file status: clear / issues found / blocking
 5. Emit `ready-for-qa` only when no blocking findings remain
@@ -39,11 +39,11 @@ The workflow runs after implementation and before testing:
 For feature `user-authentication` and scenario `01`, the review reads:
 
 ```
-docs/production/user-authentication/
-├── user-authentication-01-<story-slug>-prod.md      → user story + acceptance criteria
-├── user-authentication-01-<story-slug>-tech.md      → API, DB, permissions, security
-├── user-authentication-01-<story-slug>-design.md    → wireframe, UI components
-└── user-authentication-01-<story-slug>-testing.md   → test cases (Given/When/Then)
+docs/production/user-authentication/accounts/01-register/
+├── prod.md      → user story + acceptance criteria
+├── tech.md      → API, DB, permissions, security
+├── design.md    → wireframe, UI components
+└── testing.md   → test cases (Given/When/Then)
 ```
 
 Optionally reads `docs/features/user-authentication-technical.md` for global architecture context when present.

@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.5.1] - 2026-11-04
+
+### Added
+- Acceptance-criteria IDs in generated PRDs and `/coverage` reports with nested documentation discovery, comment-only references, opt-in thresholds, and explicit legacy backfill.
+
+### Changed
+- Support Epic-nested story breakdowns and nested document discovery in `/implement-code` and `/qa-test-script`.
+- Generate feature-level test-plan and framework-neutral QA-report drafts.
+- Preserve package scripts unless explicitly forced; harden runner and test-source generation.
+- Reduce startup cost by lazy-loading interactive dependencies.
+
+### Fixed
+- `/breakdown-task` coverage collection retains each nested criterion's source document and acceptance-criteria text.
+- Refuse generated writes through symlinks or junctions escaping the allowed root.
+
 ## [1.5.0] - 2026-10-21
 
 ### Added

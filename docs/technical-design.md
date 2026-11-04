@@ -7,7 +7,7 @@ is built today, with the files that implement each part.
 
 ```text
 sdd-gen (bin)  ->  index.js
-                     | registers 11 commands via commander
+                     | registers 12 commands via commander
                      v
                  lib/commands/<name>.js   one file per command
                      |
@@ -21,6 +21,9 @@ sdd-gen (bin)  ->  index.js
 
 `index.js` holds only wiring: version flag, global options (`--yes`,
 `--force`), command registration, and help output when no command is given.
+`/coverage` uses `lib/coverage.js` to collect criterion IDs recursively from
+Markdown docs and references from nested test files; `lib/criteria.js` assigns
+IDs during PRD generation and explicit backfill.
 
 ## 2. File layout written into a project
 
@@ -30,8 +33,8 @@ sdd-gen (bin)  ->  index.js
 | `docs/features/<feature>-technical.md` | `/technical`, `/init` |
 | `docs/features/<feature>-design.md` | `/feature-design` |
 | `docs/DESIGN.md`, `docs/README.md` | `/design-system`, directory bootstrap |
-| `docs/production/<feature>/<feature>-<nn>-<slug>-{prod,tech,design,testing}.md` | `/breakdown-task` |
-| `docs/production/<feature>/<feature>-<nn>-<slug>-implement.md` | `/implement-code` |
+| `docs/production/<feature>/<epic-slug>/<nn>-<story-slug>/{prod,tech,design,testing}.md` | `/breakdown-task` |
+| nested story folder `implement.md`; legacy flat brief remains readable | `/implement-code` |
 | `docs/test-reports/<feature>/<feature>-{spec-test,qa-report}.md` | `/init`, `/qa-report` |
 | `tests/…` | `/qa-test-script` |
 | `sdd.config.json` | every command that resolves a feature or framework |
@@ -49,10 +52,10 @@ runner can point at an extracted tarball.
 3. Templates are read from `<cli>/templates/*.md`; placeholders
    (`<Feature>`, `<StoryId>`, `[Feature Name]`, `[YYYY-MM-DD]`, ...) are filled
    by `fillDocTemplate` / per-command replacements.
-4. Output is written through `writeGeneratedFile`, which resolves the path,
-   asserts it stays inside the target directory (`assertInside`), and refuses
-   to replace an existing file unless `--force` was passed.
-5. `/breakdown-task` pre-checks all planned scenario files first, so a refused
+4. Output is written through `writeGeneratedFile`, which checks lexical and
+   resolved filesystem boundaries (including existing symlinks/junctions) and
+   refuses to replace an existing file unless `--force` was passed.
+5. `/breakdown-task` pre-checks all planned story files first, so a refused
    run writes nothing instead of a partial breakdown.
 
 ## 4. Safety model
@@ -143,7 +146,11 @@ flowchart TD
     CMD --> CONFIG["lib/utils/config.js<br/>sdd.config.json"]
     CMD --> TPL["lib/utils/template.js<br/>generated test source"]
     CMD --> AI["lib/ai-tools.js<br/>AI tool folders"]
+    CMD --> COV["lib/coverage.js<br/>recursive docs + test scan"]
+    PRD["/prd"] --> CRIT["lib/criteria.js<br/>criterion IDs + backfill"]
     FILE --> FS[("project filesystem")]
+    COV --> FS
+    CRIT --> FS
     TPL --> FS
     CONFIG --> FS
     AI --> FS

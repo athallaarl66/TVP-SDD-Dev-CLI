@@ -72,6 +72,14 @@ test('docs: technical design carries architecture, sequence, and data-model diag
   assert.ok(types.includes('erDiagram'), 'missing data-model diagram');
 });
 
+test('docs: README describes Epic-nested story outputs and draft QA behavior', () => {
+  const readme = fs.readFileSync(path.join(CLI_DIR, 'README.md'), 'utf-8');
+  assert.match(readme, /docs\/production\/\{feature\}\/\{epic-slug\}\/\{story-no\}-\{story-slug\}\//);
+  for (const file of ['prod.md', 'tech.md', 'design.md', 'testing.md']) assert.ok(readme.includes(file));
+  assert.match(readme, /framework-neutral, unexecuted QA report draft/);
+  assert.match(readme, /no automatic migration occurs/);
+});
+
 test('docs: PRD command table matches registered commands', () => {
   const { content } = mermaidBlocks(PRD);
   for (const command of registeredCommands()) {

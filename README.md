@@ -22,7 +22,8 @@ Plain Markdown lands in your repo. Works with `.claude` `.cursor` `.devin` `.ope
 
 CLI tool to make development documentation faster and easier.
 Generates PRD, Technical Design, and QA Report automatically.
-Breaks down PRD into scenario-level documentation for granular implementation.
+Breaks down Epic-grouped PRDs into nested, story-level implementation docs.
+Generates test scaffolds for multiple frameworks, not only Playwright.
 Integrated with Playwright for E2E testing.
 Works with AI tool folders: `.devin` `.opencode` `.claude` `.antigravity` `.hermes`
 Includes Design System and Feature Design documentation.
@@ -96,7 +97,7 @@ sdd-gen /init <feature-name>
 - `/install-all-skills` → Installs skills/workflows to AI tool folders (`.devin`, `.opencode`, `.claude`, `.antigravity`, `.hermes`) for AI tools
 - Documentation commands → Generate documentation to `docs/` folder for human reference
 
-**`/init` is not `/breakdown-task`.** `/init <feature>` writes the four high-level documents in one pass (PRD, technical design, spec test, QA report) and stops there. It never reads a PRD and never creates scenario files. `/breakdown-task <prd-file> [feature]` is a separate step that parses a finished PRD and writes one `prod`/`tech`/`design`/`testing` set per user story into `docs/production/<feature>/`. Typical order: `/init` (or the individual generators) → fill in the PRD → `/breakdown-task` → `/implement-code`.
+**`/init` is not `/breakdown-task`.** `/init <feature>` writes the four feature-level documents in one pass (PRD, technical design, feature test plan, QA report draft) and stops there. It never reads a PRD and never creates scenario files. `/breakdown-task <prd-file> [feature]` is a separate step that parses a finished Epic-grouped PRD and writes `prod.md`, `tech.md`, `design.md`, and `testing.md` per story into `docs/production/<feature>/<epic-slug>/<story-no>-<story-slug>/`. `/implement-code` and `/qa-test-script` also read existing flat breakdowns during transition; no automatic migration occurs. Typical order: `/init` (or the individual generators) → fill in the PRD → `/breakdown-task` → `/implement-code`.
 
 ---
 
@@ -114,7 +115,7 @@ sdd-gen /prd user-authentication
 
 # 4. fill in the PRD with user stories
 
-# 5. breakdown PRD into scenario-level docs
+# 5. breakdown Epic-grouped PRD into nested story docs
 sdd-gen /breakdown-task docs/features/user-authentication-prd.md user-authentication
 
 # 6. fill in the breakdown files (prod, tech, design, testing)
@@ -141,11 +142,14 @@ What each step writes, so you can check progress without reading the source:
 | --- | --- | --- |
 | `/design-system` | `docs/DESIGN.md` | optional; only `sdd-implement-code` reads it |
 | `/prd <feature>` | `docs/features/<feature>-prd.md` | fill in user stories, then `/breakdown-task` |
-| `/breakdown-task` | `docs/production/<feature>/<feature>-<no>-<slug>-{prod,tech,design,testing}.md` | fill in each scenario file, then `/implement-code` |
+| `/breakdown-task` | `docs/production/<feature>/<epic-slug>/<story-no>-<story-slug>/{prod,tech,design,testing}.md` | fill in each story file, then `/implement-code` |
 | `/technical`, `/feature-design` | `docs/features/<feature>-technical.md`, `docs/features/<feature>-design.md` | reference only |
 | `/qa-test-script` | `tests/<framework-specific file>` (skipped placeholder) | write assertions, then `/qa-test-run` |
 | `/qa-test-run` | runner output in your terminal; exit code mirrored | `/qa-report` |
 | `/qa-report` | `docs/test-reports/<feature>/<feature>-qa-report.md` | done |
+| `/coverage [feature]` | coverage report for acceptance-criteria IDs in nested docs/tests | add IDs to legacy PRDs with `--backfill`; opt into a threshold with `--min <percent>` |
+
+Generated PRD criteria use `AC-<FEATURE>-<STORY>-<N>` IDs. `/coverage` scans nested documentation and tests; comment-only mentions do not count. Run `sdd-gen /coverage [feature] --json` for automation.
 
 If a step refuses with `already exists`, the file was not touched: read it, then rerun with `--force` only if you intend to lose the current content. Every failure state and its recovery is listed in [failure states and recovery](#failure-states-and-recovery).
 
@@ -158,14 +162,15 @@ If a step refuses with `already exists`, the file was not touched: read it, then
 | `/install-all-skills`                         | install skills & workflows to AI tool folders (for AI tools)               | `.devin/skills/` `.devin/workflows/` etc.                      |
 | `/design-system`                              | generate global Design System documentation                                | `docs/DESIGN.md`                                               |
 | `/feature-design <feature>`                   | generate feature-level design documentation                                | `docs/features/{feature}-design.md`                            |
-| `/init <feature>`                             | generate all docs at once to docs/ folder                                  | PRD + Technical + Spec Test + QA Report                        |
+| `/init <feature>`                             | generate PRD, technical design, feature test plan, and QA report draft       | four feature-level documents                                    |
 | `/prd <feature>`                              | generate Product Requirements Document to docs/                            | `docs/features/{feature}-prd.md`                               |
-| `/breakdown-task <prd-file> [feature]`        | parse PRD, generate scenario-level docs to docs/                           | `docs/production/{feature}/` (numbered per PRD order)          |
-| `/implement-code <scenario-number> [feature]` | generate implementation brief for a numbered scenario from breakdown files | `docs/production/{feature}/{feature}-{no}-{slug}-implement.md` |
+| `/breakdown-task <prd-file> [feature]`        | parse Epic-grouped PRD, generate four story docs                           | `docs/production/{feature}/{epic-slug}/{story-no}-{story-slug}/` |
+| `/implement-code <scenario-number> [feature]` | generate implementation brief from nested or legacy breakdown files        | nested: story folder `implement.md`; legacy: feature-root brief |
 | `/technical <feature>`                        | generate Technical Design document to docs/                                | `docs/features/{feature}-technical.md`                         |
 | `/qa-test-script <feature>`                   | generate test script (Playwright or Unit) to tests/                        | `tests/{feature}.spec.ts` or `tests/{feature}.test.ts`         |
 | `/qa-test-run <feature>`                      | detect framework from generated test file and run it                       | run output                                                     |
-| `/qa-report <feature>`                        | generate QA Report document to docs/                                       | `docs/test-reports/{feature}/{feature}-qa-report.md`           |
+| `/qa-report <feature>`                        | generate framework-neutral, unexecuted QA report draft                    | `docs/test-reports/{feature}/{feature}-qa-report.md`           |
+| `/coverage [feature]`                         | report acceptance-criteria references in nested docs/tests; `--json`, `--min`, `--backfill` | coverage summary; explicit PRD backfill                         |
 
 **Global flags:**
 
@@ -187,7 +192,7 @@ Generation commands are non-destructive by default. Same rule everywhere:
 | Target file exists, `--force` / `-f` | replaced, and the command reports how many files it replaced |
 | `/install-all-skills`, skill or workflow already present in an AI tool folder | kept, printed as `kept existing ... (use --force to overwrite)` |
 
-`/breakdown-task` writes a file set per user story; an existing set is left alone unless `--force` is set. Nothing is deleted by any command.
+`/breakdown-task` writes a nested file set per user story; existing targets are left alone unless `--force` is set. Generated writes reject output paths that resolve through a symlink or junction outside the permitted root, including with `--force`; links resolving inside the root follow the normal overwrite rule. Nothing is deleted by any command.
 
 ---
 
@@ -229,7 +234,7 @@ No test in this repository executes a real PHPUnit, Jest, Playwright, xUnit, NUn
 
 ### cluster 2 — the breakdown preparator & implementer
 
-- `sdd-breakdown-task` — Parse PRD, generate scenario-level docs
+- `sdd-breakdown-task` — Parse Epic-grouped PRD, generate nested story docs
 - `sdd-implement-code` — Implement a numbered user story scenario from breakdown files
 
 ### cluster 3 — the reviewers
@@ -324,6 +329,7 @@ TVP-SDD-Dev-CLI/
 
 | Version | Date       | Changes                                                                                                                                         |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.5.1   | 2026-11-04 | Epic-nested story docs, acceptance-criteria coverage, safer generation, QA drafts, and startup improvements |
 | 1.5.0   | 2026-10-21 | First published release: shell-free test execution, honest placeholders, `--yes`, `/implement-code`, config, tests, release gates |
 | 1.4.0   | 2026-09-24 | Interactive CLI and implement-code skill                                                                                                        |
 |         |            | - `/prd`, `/technical`, `/feature-design`, `/breakdown-task`, `/qa-*` prompt for missing args and offer next-step radio guidance (non-TTY safe) |

@@ -46,6 +46,12 @@ counts without editing `docs/test-report/test-report.md`.
 registration, overwrite guards, feature-name validation, generated-source
 encoding, and runner exit-code propagation.
 
+Generated acceptance criteria use `AC-<FEATURE>-<STORY>-<N>` identifiers.
+Reference these IDs in tests for `/coverage` to count them; comment-only
+references are reported separately. Run `sdd-gen /coverage --backfill` to add
+IDs to legacy PRDs, or use `--min <percent>` to opt into a failing threshold.
+Do not treat the reference scan as assertion or branch coverage.
+
 ## What a good change includes
 
 - **A test that fails without the fix.** New behaviour, a new overwrite path, or

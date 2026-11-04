@@ -167,23 +167,36 @@ test('implement-code keeps scenario files from another feature out of the brief'
   fs.removeSync(dir);
 });
 
-test('implement-code resolves a slug that shares its number with another slug', () => {
+test('implement-code rejects two legacy stories sharing a scenario number', () => {
   const dir = tmpProject();
   const base = path.join(dir, 'docs', 'production', 'user-auth');
-  // Same feature, same scenario number, two slugs: only the prod-bearing slug counts.
   fs.outputFileSync(path.join(base, 'user-auth-01-zzz-prod.md'), '## User Story\n\n**As a** ghost\n');
   fs.outputFileSync(path.join(base, 'user-auth-01-register-prod.md'), '## User Story\n\n**As a** recruiter\n');
-  fs.outputFileSync(path.join(base, 'user-auth-01-register-tech.md'), '# tech\n');
 
-  const { status, stdout } = runCli(['/implement-code', '01', 'user-auth'], dir);
-  assert.strictEqual(status, 0, stdout);
+  const { status, stdout, stderr } = runCli(['/implement-code', '01', 'user-auth'], dir);
+  assert.strictEqual(status, 1, stdout + stderr);
+  assert.match(stdout + stderr, /scenario 01 is ambiguous/i);
+  assert.strictEqual(fs.readdirSync(base).some(file => file.endsWith('-implement.md')), false);
+  fs.removeSync(dir);
+});
 
-  const files = fs.readdirSync(base);
-  const briefName = files.find((f) => f.endsWith('-implement.md'));
-  assert.strictEqual(briefName, 'user-auth-01-register-implement.md');
-  const brief = fs.readFileSync(path.join(base, briefName), 'utf-8');
-  assert.ok(brief.includes('recruiter'));
-  assert.ok(!brief.includes('ghost'));
+test('qa-test-script combines nested testing documents with Epic/story paths', () => {
+  const dir = tmpProject();
+  fs.outputFileSync(path.join(dir, 'package.json'), JSON.stringify({ name: 'jsapp' }));
+  for (const [epic, story, marker] of [['accounts', '01-register', 'ACCOUNT-ONLY'], ['recovery', '02-reset', 'RECOVERY-ONLY']]) {
+    fs.outputFileSync(
+      path.join(dir, 'docs', 'production', 'user-auth', epic, story, 'testing.md'),
+      `## ${marker}\n`
+    );
+  }
+
+  const { status, stdout, stderr } = runCli(['--yes', '/qa-test-script', 'user-auth'], dir);
+  assert.strictEqual(status, 0, stdout + stderr);
+  const generated = fs.readFileSync(path.join(dir, 'tests', 'user-auth.test.ts'), 'utf-8');
+  assert.ok(generated.includes(['accounts', '01-register', 'testing'].join(path.sep)));
+  assert.ok(generated.includes(['recovery', '02-reset', 'testing'].join(path.sep)));
+  assert.ok(generated.includes('ACCOUNT-ONLY'));
+  assert.ok(generated.includes('RECOVERY-ONLY'));
   fs.removeSync(dir);
 });
 

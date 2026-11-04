@@ -26,6 +26,7 @@ const { registerInitCommand } = require('./lib/commands/init');
 const { registerDesignSystemCommand } = require('./lib/commands/design-system');
 const { registerFeatureDesignCommand } = require('./lib/commands/feature-design');
 const { registerImplementCodeCommand } = require('./lib/commands/implement-code');
+const { registerCoverageCommand } = require('./lib/commands/coverage');
 
 // Register all commands
 registerPrdCommand(program, getOpts);
@@ -39,6 +40,7 @@ registerInitCommand(program, getOpts);
 registerDesignSystemCommand(program, getOpts);
 registerFeatureDesignCommand(program, getOpts);
 registerImplementCodeCommand(program, getOpts);
+registerCoverageCommand(program);
 
 // Parse arguments
 program.parse(process.argv);

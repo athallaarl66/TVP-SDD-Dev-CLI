@@ -51,29 +51,35 @@
 
 ### 4.1 User Stories
 
-#### User Story 1
+### Epic 1: [Epic Title]
+
+#### User Story 1: [Story Title]
 **As a** [user type]
 **I want** [action/feature]
 **So that** [benefit/value]
 
 **Acceptance Criteria:**
-- [ ] [Criteria 1]
-- [ ] [Criteria 2]
-- [ ] [Criteria 3]
+- [ ] AC-<FEATURE>-<STORY>-<N> [Criteria 1]
+- [ ] AC-<FEATURE>-<STORY>-<N> [Criteria 2]
+- [ ] AC-<FEATURE>-<STORY>-<N> [Criteria 3]
 
 **Priority:** [Must Have / Should Have / Could Have / Won't Have]
 
-#### User Story 2
+### Epic 2: [Epic Title]
+
+#### User Story 2: [Story Title]
 **As a** [user type]
 **I want** [action/feature]
 **So that** [benefit/value]
 
 **Acceptance Criteria:**
-- [ ] [Criteria 1]
-- [ ] [Criteria 2]
-- [ ] [Criteria 3]
+- [ ] AC-<FEATURE>-<STORY>-<N> [Criteria 1]
+- [ ] AC-<FEATURE>-<STORY>-<N> [Criteria 2]
+- [ ] AC-<FEATURE>-<STORY>-<N> [Criteria 3]
 
 **Priority:** [Must Have / Should Have / Could Have / Won't Have]
+
+Add more Epic sections as needed. Story numbers must remain unique across the feature.
 
 ### 4.2 Functional Requirements by Module
 

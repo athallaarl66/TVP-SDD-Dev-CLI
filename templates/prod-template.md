@@ -20,6 +20,8 @@
 
 ## Acceptance Criteria
 
+Criteria retain their PRD identifiers in the form `AC-<FEATURE>-<STORY>-<N>`.
+
 <AcceptanceCriteria>
 
 ---
