@@ -4,6 +4,43 @@ const fs = require('fs-extra');
 const path = require('path');
 const { runNode, CLI_DIR } = require('./helpers');
 
+test('qa-test-run: protects existing package scripts byte-for-byte unless forced', async () => {
+  const { upsertQARunScript } = require('../../lib/commands/qa-test-run');
+  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sdd-script-'));
+  const packagePath = path.join(dir, 'package.json');
+  const original = '{\n  "name": "fixture",\n  "scripts": { "qa-run:checkout": "custom command" },\n  "private": true\n}\n';
+  fs.writeFileSync(packagePath, original);
+
+  await assert.rejects(upsertQARunScript(packagePath, 'qa-run:checkout', 'npx jest tests/checkout.test.ts'), /already exists/);
+  assert.strictEqual(fs.readFileSync(packagePath, 'utf8'), original);
+
+  assert.strictEqual(await upsertQARunScript(packagePath, 'qa-run:checkout', 'npx jest tests/checkout.test.ts', { force: true }), 'replaced');
+  const forced = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+  assert.strictEqual(forced.scripts['qa-run:checkout'], 'npx jest tests/checkout.test.ts');
+  assert.strictEqual(forced.private, true);
+
+  const afterForce = fs.readFileSync(packagePath, 'utf8');
+  assert.strictEqual(await upsertQARunScript(packagePath, 'qa-run:checkout', 'npx jest tests/checkout.test.ts'), 'unchanged');
+  assert.strictEqual(fs.readFileSync(packagePath, 'utf8'), afterForce);
+  fs.removeSync(dir);
+});
+
+test('qa-test-run: CLI refuses conflicting script before test execution', () => {
+  const dir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'sdd-runner-'));
+  const packagePath = path.join(dir, 'package.json');
+  const original = '{\n  "name": "fixture",\n  "scripts": { "qa-run:checkout": "custom command" }\n}\n';
+  fs.writeFileSync(packagePath, original);
+  fs.outputFileSync(path.join(dir, 'tests', 'checkout.test.ts'), 'throw new Error("must not run");\n');
+  const { runCli } = require('./helpers');
+
+  const result = runCli(['--yes', '/qa-test-run', 'checkout'], dir);
+  assert.strictEqual(result.status, 1, result.stdout + result.stderr);
+  assert.match(result.stdout + result.stderr, /already exists with a different command/);
+  assert.doesNotMatch(result.stdout + result.stderr, /must not run/);
+  assert.strictEqual(fs.readFileSync(packagePath, 'utf8'), original);
+  fs.removeSync(dir);
+});
+
 test('qa-test-run: runCommand propagates non-zero exit code from the underlying command', () => {
   const script = `
     const { runCommand } = require('./lib/commands/qa-test-run');

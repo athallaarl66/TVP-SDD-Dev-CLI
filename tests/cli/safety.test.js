@@ -3,12 +3,13 @@ const assert = require('node:assert');
 const fs = require('fs-extra');
 const path = require('path');
 const { runCli, tmpProject, CLI_DIR } = require('./helpers');
-const { validateFeatureName, assertInside } = require('../../lib/utils/file');
+const { validateFeatureName, assertInside, writeGeneratedFile } = require('../../lib/utils/file');
 
 const PRD_FIXTURE = `# Feature: user-auth
 
 ## User Stories
 
+### Epic 1: Accounts
 #### User Story 1: Register
 
 **As a** new visitor
@@ -36,6 +37,55 @@ test('assertInside: rejects paths that escape the output root', () => {
   assert.throws(() => assertInside(root, path.join(root, '..', 'evil.md')), /outside/);
   assert.throws(() => assertInside(root, root), /outside/);
   assert.ok(assertInside(root, path.join(root, 'ok.md')));
+});
+
+test('generated writes reject links escaping the output root, with and without force', async () => {
+  const dir = tmpProject();
+  const root = path.join(dir, 'docs');
+  const external = path.join(dir, 'outside');
+  const externalFile = path.join(external, 'keep.md');
+  await fs.ensureDir(root);
+  await fs.ensureDir(external);
+  fs.writeFileSync(externalFile, 'untouched');
+  const link = path.join(root, 'linked');
+  try {
+    await fs.symlink(external, link, process.platform === 'win32' ? 'junction' : 'dir');
+  } catch (error) {
+    fs.removeSync(dir);
+    if (['EPERM', 'EACCES', 'ENOTSUP', 'ENOSYS'].includes(error.code)) return;
+    throw error;
+  }
+
+  for (const force of [false, true]) {
+    await assert.rejects(
+      writeGeneratedFile(path.join(link, 'keep.md'), 'overwrite', { rootDir: root, force }),
+      /filesystem link outside/
+    );
+    assert.strictEqual(fs.readFileSync(externalFile, 'utf8'), 'untouched');
+  }
+  fs.removeSync(dir);
+});
+
+test('generated writes allow links resolving inside the output root', async () => {
+  const dir = tmpProject();
+  const root = path.join(dir, 'docs');
+  const targetDir = path.join(root, 'target');
+  await fs.ensureDir(targetDir);
+  const link = path.join(root, 'linked');
+  try {
+    await fs.symlink(targetDir, link, process.platform === 'win32' ? 'junction' : 'dir');
+  } catch (error) {
+    fs.removeSync(dir);
+    if (['EPERM', 'EACCES', 'ENOTSUP', 'ENOSYS'].includes(error.code)) return;
+    throw error;
+  }
+
+  const target = path.join(link, 'story.md');
+  assert.strictEqual(await writeGeneratedFile(target, 'first', { rootDir: root }), false);
+  await assert.rejects(writeGeneratedFile(target, 'second', { rootDir: root }), /already exists/);
+  assert.strictEqual(await writeGeneratedFile(target, 'second', { rootDir: root, force: true }), true);
+  assert.strictEqual(fs.readFileSync(path.join(targetDir, 'story.md'), 'utf8'), 'second');
+  fs.removeSync(dir);
 });
 
 test('/prd rejects a traversal feature name and writes nothing', () => {
@@ -83,7 +133,7 @@ test('breakdown preserves existing scenario files unless --force is passed', () 
   const first = runCli(['/breakdown-task', 'docs/features/user-auth-prd.md', 'user-auth'], dir);
   assert.strictEqual(first.status, 0, first.stdout);
 
-  const target = path.join(dir, 'docs', 'production', 'user-auth', 'user-auth-01-register-prod.md');
+  const target = path.join(dir, 'docs', 'production', 'user-auth', 'accounts', '01-register', 'prod.md');
   const filesBefore = fs.readdirSync(path.dirname(target));
   fs.writeFileSync(target, 'edited by hand\n');
 
@@ -113,6 +163,28 @@ test('qa-test-script rejects an unsupported configured framework before side eff
     JSON.parse(fs.readFileSync(path.join(dir, 'sdd.config.json'), 'utf-8')),
     { testFramework: 'mocha-evil' }
   );
+  fs.removeSync(dir);
+});
+
+test('/init spec test has no unresolved story-specific placeholders', () => {
+  const dir = tmpProject();
+  const result = runCli(['--yes', '/init', 'user-auth'], dir);
+  assert.strictEqual(result.status, 0, result.stdout + result.stderr);
+  const testPlan = fs.readFileSync(path.join(dir, 'docs', 'test-reports', 'user-auth', 'user-auth-spec-test.md'), 'utf-8');
+  assert.doesNotMatch(testPlan, /<StoryId>|<StoryTitle>|<AcceptanceCriteria>/);
+  assert.match(testPlan, /feature-level.*test plan/i);
+  fs.removeSync(dir);
+});
+
+test('/qa-report generates framework-neutral draft without fabricated results', () => {
+  const dir = tmpProject();
+  const result = runCli(['--yes', '/qa-report', 'checkout'], dir);
+  assert.strictEqual(result.status, 0, result.stdout + result.stderr);
+  const report = fs.readFileSync(path.join(dir, 'docs', 'test-reports', 'checkout', 'checkout-qa-report.md'), 'utf-8');
+  assert.match(report, /QA Report Draft: checkout/);
+  assert.match(report, /NOT RUN/);
+  assert.doesNotMatch(report, /Playwright|READY TO SHIP|\{PASSED\}|\{PASS_RATE\}|screenshots\//i);
+  assert.match(report, /Total \| Not run/);
   fs.removeSync(dir);
 });
 

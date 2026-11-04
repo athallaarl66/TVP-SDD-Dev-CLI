@@ -142,23 +142,24 @@ function main() {
   // 2.9 breakdown needs a PRD with user stories
   writeFile(
     path.join(project, 'docs', 'production', 'user-stories-prd.md'),
-    '#### User Story 1: Register\n\n**As a** visitor\n**I want** an account\n**So that** I can log in\n\n**Acceptance Criteria:**\n- [ ] form validates email\n'
+    '### Epic 1: Accounts\n#### User Story 1: Register\n\n**As a** visitor\n**I want** an account\n**So that** I can log in\n\n**Acceptance Criteria:**\n- [ ] form validates email\n'
   );
   r = runCli(pkgDir, project, ['/breakdown-task', 'docs/production/user-stories-prd.md', 'onboarding']);
-  const breakdownFiles = fs.existsSync(path.join(project, 'docs', 'production', 'onboarding'))
-    ? fs.readdirSync(path.join(project, 'docs', 'production', 'onboarding'))
-    : [];
+  const storyDir = path.join(project, 'docs', 'production', 'onboarding', 'accounts', '01-register');
+  const breakdownFiles = fs.existsSync(storyDir) ? fs.readdirSync(storyDir) : [];
+  const expectedBreakdownFiles = ['design.md', 'prod.md', 'tech.md', 'testing.md'];
+  const validBreakdown = expectedBreakdownFiles.every((file) => breakdownFiles.includes(file));
   record({
     id: '2.9',
-    check: 'breakdown',
+    check: 'Epic-nested breakdown',
     command: 'sdd-gen /breakdown-task <prd> onboarding',
     expect: 'exit 0',
-    result: { status: breakdownFiles.length === 4 ? r.status : `${r.status}+${breakdownFiles.length}files` },
-    evidence: breakdownFiles.join(', ')
+    result: { status: validBreakdown ? r.status : `${r.status}+missing nested story files` },
+    evidence: `${path.relative(project, storyDir)}: ${breakdownFiles.join(', ')}`
   });
 
   r = runCli(pkgDir, project, ['/implement-code', '01', 'onboarding']);
-  const briefPath = path.join(project, 'docs', 'production', 'onboarding', 'onboarding-01-register-implement.md');
+  const briefPath = path.join(storyDir, 'implement.md');
   const brief = fs.existsSync(briefPath) ? fs.readFileSync(briefPath, 'utf-8') : '';
   record({
     id: '2.10',
@@ -290,7 +291,7 @@ function main() {
   fs.unlinkSync(path.join(trimmed, 'node_modules'));
   fs.rmSync(work, { recursive: true, force: true });
 
-  if (summary.passed !== summary.total) process.exitCode = 1;
+  if (summary.failed > 0) process.exitCode = 1;
 }
 
 main();

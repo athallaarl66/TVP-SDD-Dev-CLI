@@ -45,13 +45,14 @@ Verified against `index.js` registrations.
 | `/technical` | `[featureName]` | `docs/features/<feature>-technical.md` |
 | `/feature-design` | `[featureName]` | `docs/features/<feature>-design.md` |
 | `/design-system` | — | `docs/DESIGN.md` |
-| `/breakdown-task` | `<prdFile> [featureName]` | `docs/production/<feature>/<feature>-<nn>-<slug>-{prod,tech,design,testing}.md` |
-| `/implement-code` | `<scenarioNumber> [featureName]` | `docs/production/<feature>/<feature>-<nn>-<slug>-implement.md` |
+| `/breakdown-task` | `<prdFile> [featureName]` | `docs/production/<feature>/<epic-slug>/<nn>-<story-slug>/{prod,tech,design,testing}.md` |
+| `/implement-code` | `<scenarioNumber> [featureName]` | nested story folder `implement.md`; legacy flat brief remains readable |
 | `/qa-test-script` | `[featureName]` | a test file under `tests/` for the chosen framework |
 | `/qa-test-run` | `[featureName]` | runs the generated test command, propagates its exit code |
 | `/qa-report` | `[featureName]` | `docs/test-reports/<feature>/<feature>-qa-report.md` |
-| `/init` | `<featureName>` | PRD, technical, spec test, and QA report in one pass |
+| `/init` | `<featureName>` | PRD, technical, feature test plan, and QA report draft in one pass |
 | `/install-all-skills` | — | skills, workflows, and templates copied into selected AI tool folders |
+| `/coverage` | `[featureName]` with `--json`, `--min`, or `--backfill` | criteria coverage report; optional PRD backfill |
 
 Global flags: `--yes` (non-interactive), `--force` (overwrite generated files),
 `--version`, `--help`.
