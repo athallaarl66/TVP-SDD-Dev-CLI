@@ -68,3 +68,53 @@ test('manifest inspection reports edit and source staleness as independent facts
     data.cleanup();
   }
 });
+
+test('freshness handles clone timestamps, independent edits, missing and untracked documents without Git', async () => {
+  const data = fixture();
+  try {
+    const document = path.join(data.root, 'docs/features/pay-prd.md');
+    const source = path.join(data.root, 'docs/features/source.md');
+    fs.outputFileSync(document, 'generated');
+    fs.outputFileSync(source, 'source');
+    await recordDocument(data.root, { kind: 'prd', feature: 'pay', filePath: document, sourcePaths: [source] });
+    const future = new Date(Date.now() + 60000);
+    fs.utimesSync(source, future, future);
+    let state = (await inspectManifest(data.root)).tracked[0];
+    assert.equal(state.stale, false);
+    fs.writeFileSync(document, 'edited');
+    state = (await inspectManifest(data.root)).tracked[0];
+    assert.equal(state.edited, true);
+    assert.equal(state.stale, false);
+    fs.writeFileSync(source, 'changed');
+    fs.utimesSync(source, new Date(0), new Date(0));
+    state = (await inspectManifest(data.root)).tracked[0];
+    assert.equal(state.stale, true);
+    assert.equal(state.edited, true);
+    assert.deepEqual(state.changedSources, ['docs/features/source.md']);
+    fs.removeSync(document);
+    fs.outputFileSync(path.join(data.root, 'docs/features/other-design.md'), 'untracked');
+    const result = await inspectManifest(data.root);
+    assert.ok(result.tracked[0].invalid.includes('missing-document'));
+    assert.deepEqual(result.untracked, ['docs/features/other-design.md']);
+  } finally { data.cleanup(); }
+});
+
+test('empty source patterns are invalid while documents with no source patterns remain valid', async () => {
+  const data = fixture();
+  try {
+    fs.outputFileSync(path.join(data.root, 'docs/features/pay-prd.md'), 'generated');
+    await recordDocument(data.root, { kind: 'prd', feature: 'pay', filePath: 'docs/features/pay-prd.md' });
+    let result = await inspectManifest(data.root);
+    assert.deepEqual(result.tracked[0].invalid, []);
+    const manifest = await readManifest(data.root);
+    manifest.documents[0].sourcePatterns = ['docs/missing/*.md'];
+    await writeManifest(data.root, manifest);
+    result = await inspectManifest(data.root);
+    assert.ok(result.tracked[0].invalid.includes('empty-source-pattern:docs/missing/*.md'));
+    fs.outputFileSync(path.join(data.root, 'docs/missing/input.md'), 'new source');
+    result = await inspectManifest(data.root);
+    assert.deepEqual(result.tracked[0].invalid, []);
+    assert.equal(result.tracked[0].stale, true);
+    assert.deepEqual(result.tracked[0].changedSources, ['docs/missing/input.md']);
+  } finally { data.cleanup(); }
+});

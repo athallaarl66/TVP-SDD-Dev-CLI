@@ -30,6 +30,7 @@ const { registerCoverageCommand } = require('./lib/commands/coverage');
 const { registerContextCommand } = require('./lib/commands/context');
 const { registerDoctorCommand } = require('./lib/commands/doctor');
 const { registerMcpCommand } = require('./lib/commands/mcp');
+const { registerRememberCommand } = require('./lib/commands/remember');
 
 // Register all commands
 registerPrdCommand(program, getOpts);
@@ -47,6 +48,7 @@ registerCoverageCommand(program);
 registerContextCommand(program);
 registerDoctorCommand(program);
 registerMcpCommand(program);
+registerRememberCommand(program);
 
 // Parse arguments
 program.parse(process.argv);

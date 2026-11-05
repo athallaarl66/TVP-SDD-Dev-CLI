@@ -47,6 +47,10 @@ test('package: tarball contains only intended files', () => {
   // Runtime essentials really are present.
   assert.ok(paths.includes('index.js'));
   assert.ok(paths.includes('server.json'));
+  assert.ok(paths.includes('README.md'));
+  for (const file of ['lib/context.js', 'lib/manifest.js', 'lib/commands/context.js', 'lib/commands/doctor.js', 'lib/commands/mcp.js', 'lib/mcp/index.js']) {
+    assert.ok(paths.includes(file), `missing packaged runtime file: ${file}`);
+  }
   assert.ok(paths.some((p) => p.startsWith('templates/')));
   assert.ok(paths.some((p) => p.startsWith('skill-templates/')));
   assert.ok(paths.some((p) => p.startsWith('workflow-templates/')));

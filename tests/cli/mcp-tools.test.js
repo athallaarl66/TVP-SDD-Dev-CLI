@@ -36,6 +36,25 @@ test('MCP exposes valid tool schemas and delegates shared tools to core modules'
   }
 });
 
+test('MCP memory uses shared lifecycle, filters, and path boundaries', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sdd-mcp-memory-'));
+  try {
+    fs.outputFileSync(path.join(root, 'source.md'), 'source');
+    const server = new McpServer(root, { write() {}, diagnostic() {} });
+    const memory = require('../../lib/memory');
+    const created = await server.callTool({ name: 'sdd_remember', arguments: { kind: 'ADR', content: 'Payment decision', feature: 'pay', refs: ['source.md'] } });
+    const entry = JSON.parse(created.content[0].text);
+    assert.equal(entry.id, 'ADR-001');
+    assert.equal(entry.status, 'draft');
+    await memory.confirm(root, entry.id);
+    const filters = { feature: 'pay', status: 'confirmed', query: 'payment' };
+    const result = await server.callTool({ name: 'sdd_recall', arguments: filters });
+    assert.deepEqual(JSON.parse(result.content[0].text), await memory.recall(root, filters));
+    assert.equal((await server.callTool({ name: 'sdd_remember', arguments: { kind: 'ADR', content: 'bad', refs: ['../secret'] } })).isError, true);
+    await assert.rejects(server.callTool({ name: 'sdd_remember', arguments: { id: 'ADR-999', kind: 'ADR', content: 'bad' } }), { code: -32602 });
+  } finally { fs.removeSync(root); }
+});
+
 test('MCP dispatch exposes lifecycle, tool discovery, resources, templates, and resource reads', async () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sdd-mcp-dispatch-'));
   try {

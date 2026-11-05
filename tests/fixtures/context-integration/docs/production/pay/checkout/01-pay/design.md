@@ -1,0 +1,3 @@
+# Design
+
+Display payment confirmation.

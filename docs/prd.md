@@ -55,6 +55,7 @@ Verified against `index.js` registrations.
 | `/coverage` | `[featureName]` with `--json`, `--min`, or `--backfill` | criteria coverage report; optional PRD backfill |
 | `/context` | `check` or `build <featureName>` with `--budget`, `--terse` | tracked document freshness check or bounded feature context |
 | `/doctor` | — | read-only diagnostics for Node, context, manifest, coverage, MCP setup |
+| `/remember` | `add`, `confirm`, `supersede`, `recall`, or `history` | local project memory under `.sdd/memory/` |
 | `mcp` | — | start MCP JSON-RPC server over stdio |
 
 Global flags: `--yes` (non-interactive), `--force` (overwrite generated files),

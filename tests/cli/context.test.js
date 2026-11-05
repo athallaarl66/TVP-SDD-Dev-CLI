@@ -6,6 +6,7 @@ const path = require('path');
 const { recordDocument } = require('../../lib/manifest');
 const { buildContext, checkContext, writeContext } = require('../../lib/context');
 const { runCli } = require('./helpers');
+const memory = require('../../lib/memory');
 
 function fixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sdd-context-'));
@@ -73,6 +74,54 @@ test('context build rejects invalid feature and unknown selection without source
     assert.equal(generated.status, 0, generated.stderr || generated.stdout);
     assert.ok(fs.existsSync(path.join(data.root, 'docs/context/pay.md')));
     assert.equal(fs.readFileSync(sourcePath, 'utf8'), sourceBefore);
+  } finally {
+    data.cleanup();
+  }
+});
+
+test('context includes only current relevant confirmed memory in stable order', async () => {
+  const data = fixture();
+  try {
+    const doc = path.join(data.root, 'docs/features/pay-prd.md');
+    fs.outputFileSync(doc, '# PRD\n');
+    await recordDocument(data.root, { kind: 'prd', feature: 'pay', filePath: doc });
+    const add = (content, options = {}) => memory.add(data.root, { kind: 'NOTE', content, ...options });
+    const project = await add('Project-wide decision');
+    const feature = await add('Pay decision', { feature: 'pay' });
+    const other = await add('Other feature decision', { feature: 'other' });
+    await add('Draft decision', { feature: 'pay' });
+    const obsolete = await add('Superseded decision', { feature: 'pay' });
+    const ref = path.join(data.root, 'reference.md');
+    fs.writeFileSync(ref, 'reference');
+    const stale = await add('Stale decision', { feature: 'pay', refs: ['reference.md'] });
+    for (const entry of [project, feature, other, obsolete, stale]) await memory.confirm(data.root, entry.id);
+    await memory.supersede(data.root, obsolete.id, { content: 'Replacement draft' });
+    fs.utimesSync(ref, new Date(Date.now() + 10000), new Date(Date.now() + 10000));
+    const first = await buildContext(data.root, 'pay', { terse: true });
+    assert.equal(first.text, (await buildContext(data.root, 'pay', { terse: true })).text);
+    assert.match(first.text, /Project-wide decision/);
+    assert.match(first.text, /Pay decision/);
+    assert.ok(first.text.indexOf(project.id) < first.text.indexOf(feature.id));
+    for (const excluded of ['Other feature decision', 'Draft decision', 'Superseded decision', 'Stale decision', 'Replacement draft']) {
+      assert.ok(!first.text.includes(excluded), excluded);
+    }
+  } finally {
+    data.cleanup();
+  }
+});
+
+test('context omits entire memory section when budget is insufficient', async () => {
+  const data = fixture();
+  try {
+    const doc = path.join(data.root, 'docs/features/pay-prd.md');
+    fs.outputFileSync(doc, '# PRD\n');
+    await recordDocument(data.root, { kind: 'prd', feature: 'pay', filePath: doc });
+    const entry = await memory.add(data.root, { kind: 'ADR', content: 'Memory content '.repeat(100), feature: 'pay' });
+    await memory.confirm(data.root, entry.id);
+    const result = await buildContext(data.root, 'pay', { budget: 300, terse: true });
+    assert.ok(result.metadata.omittedSections.includes('Memory'));
+    assert.doesNotMatch(result.text, /Memory content|## Memory/);
+    assert.match(result.text, /"Memory"/);
   } finally {
     data.cleanup();
   }
