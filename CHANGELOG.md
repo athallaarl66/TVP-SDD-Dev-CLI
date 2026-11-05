@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.5.2] - 2026-11-05
+
+### Added
+- Manifest-backed document freshness checks and bounded feature context via `/context`.
+- Local project memory lifecycle and deterministic recall via `/remember` and MCP tools.
+- MCP stdio server, context and coverage tools, resources, and `/doctor` diagnostics.
+- CI context gate with report-only acceptance coverage.
+
+### Fixed
+- Lazy-load interactive `/qa-test-script` prompt and detect empty tracked source patterns.
+
 ## [1.5.1] - 2026-11-04
 
 ### Added

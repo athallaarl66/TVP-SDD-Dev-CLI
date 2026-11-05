@@ -7,12 +7,12 @@
     "url": "https://github.com/athallaarl66/TVP-SDD-Dev-CLI",
     "source": "github"
   },
-  "version": "1.5.1",
+  "version": "1.5.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "sdd-dev-cli",
-      "version": "1.5.1",
+      "version": "1.5.2",
       "transport": {
         "type": "stdio"
       }

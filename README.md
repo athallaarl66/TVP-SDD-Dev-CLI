@@ -360,6 +360,7 @@ TVP-SDD-Dev-CLI/
 
 | Version | Date       | Changes                                                                                                                                         |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.5.2   | 2026-11-05 | Manifest freshness, context bundles, local memory, MCP server, diagnostics, and CI context gate |
 | 1.5.1   | 2026-11-04 | Epic-nested story docs, acceptance-criteria coverage, safer generation, QA drafts, and startup improvements |
 | 1.5.0   | 2026-10-21 | First published release: shell-free test execution, honest placeholders, `--yes`, `/implement-code`, config, tests, release gates |
 | 1.4.0   | 2026-09-24 | Interactive CLI and implement-code skill                                                                                                        |

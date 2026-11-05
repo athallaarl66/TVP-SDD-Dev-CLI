@@ -1,6 +1,6 @@
 {
   "name": "sdd-dev-cli",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "mcpName": "io.github.athallaarl66/tvp-sdd-dev-cli",
   "description": "Global CLI tool for Software Development Documentation workflow",
   "main": "index.js",
