@@ -1,6 +1,7 @@
 {
   "name": "sdd-dev-cli",
   "version": "1.5.1",
+  "mcpName": "io.github.athallaarl66/tvp-sdd-dev-cli",
   "description": "Global CLI tool for Software Development Documentation workflow",
   "main": "index.js",
   "bin": {
@@ -35,7 +36,8 @@
     "templates/",
     "skill-templates/",
     "workflow-templates/",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "server.json"
   ],
   "dependencies": {
     "chalk": "^4.1.2",

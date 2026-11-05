@@ -170,7 +170,36 @@ If a step refuses with `already exists`, the file was not touched: read it, then
 | `/qa-test-script <feature>`                   | generate test script (Playwright or Unit) to tests/                        | `tests/{feature}.spec.ts` or `tests/{feature}.test.ts`         |
 | `/qa-test-run <feature>`                      | detect framework from generated test file and run it                       | run output                                                     |
 | `/qa-report <feature>`                        | generate framework-neutral, unexecuted QA report draft                    | `docs/test-reports/{feature}/{feature}-qa-report.md`           |
-| `/coverage [feature]`                         | report acceptance-criteria references in nested docs/tests; `--json`, `--min`, `--backfill` | coverage summary; explicit PRD backfill                         |
+| `/coverage [feature]` | report acceptance-criteria references in nested docs/tests; `--json`, `--min`, `--backfill` | coverage summary; explicit PRD backfill                         |
+| `/context check` / `/context build <feature>` | check tracked document freshness or build bounded context | `.sdd/manifest.json`, `docs/context/<feature>.md` |
+| `/doctor` | read-only runtime, context, coverage, and MCP setup diagnostics | diagnostic report |
+| `mcp` | start MCP JSON-RPC server over stdio | agent-client protocol stream |
+
+### MCP setup
+
+MCP server runs locally from the project directory. Add this configuration to your MCP client and restart the client:
+
+```json
+{
+  "mcpServers": {
+    "sdd-gen": {
+      "command": "sdd-gen",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+The server uses stdio and does not require an API key, network service, or MCP SDK. Run `sdd-gen /doctor` for local setup checks.
+
+```bash
+sdd-gen /context check
+sdd-gen /context build user-authentication --budget 24000 --terse
+sdd-gen /doctor
+```
+
+Use an MCP client that supports stdio servers. Place the JSON under that client's project or user configuration; client config paths vary by application.
+
 
 **Global flags:**
 

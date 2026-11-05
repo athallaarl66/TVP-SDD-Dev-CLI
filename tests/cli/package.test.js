@@ -7,7 +7,7 @@ const { spawnSync } = require('child_process');
 const { CLI_DIR } = require('./helpers');
 
 const ALLOWED_ROOTS = ['lib/', 'templates/', 'skill-templates/', 'workflow-templates/'];
-const ALLOWED_FILES = ['package.json', 'README.md', 'LICENSE', 'CHANGELOG.md', 'index.js'];
+const ALLOWED_FILES = ['package.json', 'README.md', 'LICENSE', 'CHANGELOG.md', 'index.js', 'server.json'];
 
 function runNpm(args, cwd) {
   if (process.platform === 'win32') {
@@ -46,6 +46,7 @@ test('package: tarball contains only intended files', () => {
   }
   // Runtime essentials really are present.
   assert.ok(paths.includes('index.js'));
+  assert.ok(paths.includes('server.json'));
   assert.ok(paths.some((p) => p.startsWith('templates/')));
   assert.ok(paths.some((p) => p.startsWith('skill-templates/')));
   assert.ok(paths.some((p) => p.startsWith('workflow-templates/')));

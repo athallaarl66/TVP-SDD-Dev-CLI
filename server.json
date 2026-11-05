@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.athallaarl66/tvp-sdd-dev-cli",
+  "title": "TVP-SDD Dev CLI",
+  "description": "Generate and inspect software development documentation from local project files.",
+  "repository": {
+    "url": "https://github.com/athallaarl66/TVP-SDD-Dev-CLI",
+    "source": "github"
+  },
+  "version": "1.5.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "sdd-dev-cli",
+      "version": "1.5.1",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
