@@ -170,7 +170,38 @@ If a step refuses with `already exists`, the file was not touched: read it, then
 | `/qa-test-script <feature>`                   | generate test script (Playwright or Unit) to tests/                        | `tests/{feature}.spec.ts` or `tests/{feature}.test.ts`         |
 | `/qa-test-run <feature>`                      | detect framework from generated test file and run it                       | run output                                                     |
 | `/qa-report <feature>`                        | generate framework-neutral, unexecuted QA report draft                    | `docs/test-reports/{feature}/{feature}-qa-report.md`           |
-| `/coverage [feature]`                         | report acceptance-criteria references in nested docs/tests; `--json`, `--min`, `--backfill` | coverage summary; explicit PRD backfill                         |
+| `/coverage [feature]` | report acceptance-criteria references in nested docs/tests; `--json`, `--min`, `--backfill` | coverage summary; explicit PRD backfill                         |
+| `/context check` / `/context build [feature]` | check tracked document freshness or build bounded context; `--budget <characters>`, `--terse` | check report or `docs/context/<feature>.md` |
+| `/doctor` | read-only runtime, context, coverage, and MCP setup diagnostics | diagnostic report |
+| `mcp` | start MCP JSON-RPC server over stdio | agent-client protocol stream |
+
+`/remember` manages local, per-checkout memory in `.sdd/memory/`. Use `sdd-gen /remember add --kind ADR --content "Decision"`, then `sdd-gen /remember confirm ADR-001`. Use `recall`, `history ADR-001`, or `supersede ADR-001 --content "Replacement"` to inspect or update history. MCP exposes `sdd_remember` and `sdd_recall`. New entries are drafts; only confirmed, current, relevant entries enter context. Shared checkouts share memory; sync, export/import, and per-user isolation are not supported.
+
+### MCP setup
+
+MCP server runs locally from the project directory. Add this configuration to your MCP client and restart the client:
+
+```json
+{
+  "mcpServers": {
+    "sdd-gen": {
+      "command": "sdd-gen",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+The server uses stdio and does not require an API key, network service, or MCP SDK. Configure the client to launch it with the project directory as its working directory: paths resolve from there. Run `sdd-gen /doctor` for read-only local setup checks.
+
+```bash
+sdd-gen /context check
+sdd-gen /context build user-authentication --budget 24000 --terse
+sdd-gen /doctor
+```
+
+Use an MCP client that supports stdio servers. Place the JSON under that client's project or user configuration; client config paths vary by application.
+
 
 **Global flags:**
 
@@ -329,6 +360,7 @@ TVP-SDD-Dev-CLI/
 
 | Version | Date       | Changes                                                                                                                                         |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.5.2   | 2026-11-05 | Manifest freshness, context bundles, local memory, MCP server, diagnostics, and CI context gate |
 | 1.5.1   | 2026-11-04 | Epic-nested story docs, acceptance-criteria coverage, safer generation, QA drafts, and startup improvements |
 | 1.5.0   | 2026-10-21 | First published release: shell-free test execution, honest placeholders, `--yes`, `/implement-code`, config, tests, release gates |
 | 1.4.0   | 2026-09-24 | Interactive CLI and implement-code skill                                                                                                        |

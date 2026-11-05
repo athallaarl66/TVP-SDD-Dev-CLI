@@ -1,0 +1,10 @@
+{
+  "id": "NOTE-001",
+  "kind": "NOTE",
+  "content": "Use idempotent payment confirmation.",
+  "feature": "pay",
+  "tags": ["checkout"],
+  "refs": [],
+  "status": "confirmed",
+  "baseline": 1735689600000
+}

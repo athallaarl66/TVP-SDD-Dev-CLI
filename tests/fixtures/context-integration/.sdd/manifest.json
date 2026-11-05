@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "documents": [
+    {
+      "kind": "prd",
+      "feature": "pay",
+      "path": "docs/features/pay-prd.md",
+      "sourcePatterns": [],
+      "sources": [],
+      "generatedHash": "9645f26a9523c7995e88ac84368759679fc532779e8cfc7335882aee05e22462",
+      "generatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "kind": "production",
+      "feature": "pay",
+      "path": "docs/production/pay/checkout/01-pay/prod.md",
+      "sourcePatterns": [
+        "docs/features/pay-prd.md"
+      ],
+      "sources": [
+        {
+          "path": "docs/features/pay-prd.md",
+          "hash": "9645f26a9523c7995e88ac84368759679fc532779e8cfc7335882aee05e22462",
+          "mtimeMs": 0
+        }
+      ],
+      "generatedHash": "6dff85825c313e8e21f4e1650fa3299c3c769ca79f4f89837c7e45da0ca2aa68",
+      "generatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "kind": "production",
+      "feature": "pay",
+      "path": "docs/production/pay/checkout/01-pay/tech.md",
+      "sourcePatterns": [
+        "docs/features/pay-prd.md"
+      ],
+      "sources": [
+        {
+          "path": "docs/features/pay-prd.md",
+          "hash": "9645f26a9523c7995e88ac84368759679fc532779e8cfc7335882aee05e22462",
+          "mtimeMs": 0
+        }
+      ],
+      "generatedHash": "910db05845f0329f0d10bf4d444a9f0a521624c4ccdec48602e78e81601f29ab",
+      "generatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "kind": "production",
+      "feature": "pay",
+      "path": "docs/production/pay/checkout/01-pay/design.md",
+      "sourcePatterns": [
+        "docs/features/pay-prd.md"
+      ],
+      "sources": [
+        {
+          "path": "docs/features/pay-prd.md",
+          "hash": "9645f26a9523c7995e88ac84368759679fc532779e8cfc7335882aee05e22462",
+          "mtimeMs": 0
+        }
+      ],
+      "generatedHash": "d2d8a6e286436983b0898f1183bd98d5b481eb33c015adc6b003f03676e3691d",
+      "generatedAt": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "kind": "production",
+      "feature": "pay",
+      "path": "docs/production/pay/checkout/01-pay/testing.md",
+      "sourcePatterns": [
+        "docs/features/pay-prd.md"
+      ],
+      "sources": [
+        {
+          "path": "docs/features/pay-prd.md",
+          "hash": "9645f26a9523c7995e88ac84368759679fc532779e8cfc7335882aee05e22462",
+          "mtimeMs": 0
+        }
+      ],
+      "generatedHash": "64d51637408d6202c6925f4713632e0dff1748840df27f926a3022e5fa0c9f47",
+      "generatedAt": "2025-01-01T00:00:00.000Z"
+    }
+  ]
+}

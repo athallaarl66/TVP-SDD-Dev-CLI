@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "documents": [
+    {
+      "kind": "prd",
+      "feature": "sdd-dev-cli",
+      "path": "docs/prd.md",
+      "sourcePatterns": [],
+      "sources": [],
+      "generatedHash": "dc9f820037118df67af1f70ecb51d6f7028e104650988c8b551d5eecbdcedeb0",
+      "generatedAt": "2026-11-05T08:30:58.193Z"
+    },
+    {
+      "kind": "technical",
+      "feature": "sdd-dev-cli",
+      "path": "docs/technical-design.md",
+      "sourcePatterns": [],
+      "sources": [],
+      "generatedHash": "62ca21bf216976add76cffd85efb0d5a50585d7dae5f771d5fd732a059defff4",
+      "generatedAt": "2026-11-05T08:30:58.193Z"
+    }
+  ]
+}

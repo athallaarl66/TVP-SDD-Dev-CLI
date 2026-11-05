@@ -9,6 +9,20 @@ permissions:
   contents: read
 
 jobs:
+  context-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Check context
+        run: node "$GITHUB_WORKSPACE/index.js" /context check
+      - name: Report acceptance coverage
+        run: node "$GITHUB_WORKSPACE/index.js" /coverage --min 0
+
   test:
     name: Node ${{ matrix.node }}
     runs-on: ubuntu-latest
